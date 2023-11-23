@@ -3,7 +3,7 @@
 ## Как запустить
 
 ```bash
-uvicorn main:app --reload
+uvicorn app:app --reload
 ```
 
 ## Сваггер
