@@ -1,18 +1,45 @@
 import { BugReport, Egg } from "@mui/icons-material";
-import { Button } from "@mui/material";
+import { Button, Container } from "@mui/material";
 import { useState } from "react";
+import { Link, Route, Router, useRouter } from "wouter";
+import { MainPage } from "./main_page";
+import { KonspektPage } from "./konspekt_page";
+
+const KonspektRouter = () => {
+    const router = useRouter();
+
+    return (
+        <Router base="/konspekt" parent={router}>
+            <Route path="/">
+                <KonspektPage />
+            </Route>
+        </Router>
+    );
+};
 
 function App() {
     const [count, setCount] = useState(0);
 
     return (
-        <>
-            <h1>Minimal app</h1>
+        <Container>
+            <h1>MASSistent</h1>
 
-            <Button variant="contained" onClick={() => setCount(count + 1)}>
-                <Egg /> Count: {count}
-            </Button>
-        </>
+            <ul>
+                <li>
+                    <Link href="/">Main</Link>
+                </li>
+                <li>
+                    <Link href="/konspekt">Konspekt</Link>
+                </li>
+            </ul>
+
+            <Router>
+                <Route path="/">
+                    <MainPage />
+                </Route>
+                <KonspektRouter />
+            </Router>
+        </Container>
     );
 }
 
