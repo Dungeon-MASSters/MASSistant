@@ -1,10 +1,14 @@
 from typing import Annotated, Union
-from fastapi import FastAPI, File, UploadFile, status
+from fastapi import Depends, FastAPI, File, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 import aiofiles
 import os
 import mimetypes
 import uuid
+
+from sqlalchemy.orm import Session
+from app.queries import create_konspekt_upload
+from app.database import get_db
 
 from app.response_models import DefaultErrorResponse, KonspektUploadSuccessResponse
 
@@ -24,7 +28,7 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -48,7 +52,7 @@ def read_item(item_id: int, q: Union[str, None] = None):
 
 
 @app.post("/api/konspekt")
-async def upload_konspekt(audio: UploadFile) -> KonspektUploadSuccessResponse | DefaultErrorResponse:
+async def upload_konspekt(audio: UploadFile, db: Session = Depends(get_db)) -> KonspektUploadSuccessResponse | DefaultErrorResponse:
     filename = audio.filename
     og_filename = audio.filename
     mime = audio.content_type
@@ -66,16 +70,22 @@ async def upload_konspekt(audio: UploadFile) -> KonspektUploadSuccessResponse | 
             error_key="upload.unknown_filetype"
         )
 
-    if filename is None:
-        filename = str(uuid.uuid4()) + ext
+    filename = str(uuid.uuid4()) + ext
 
     path_to_save = os.path.join(uploads_dir, filename)
     async with aiofiles.open(path_to_save, 'wb') as out_file:
         while content := await audio.read(1024):  # async read chunk
             await out_file.write(content)  # async write chunk
 
+    new_upload = create_konspekt_upload(
+        db,
+        orignal_filename=og_filename,
+        filename=filename
+    )
+    print(new_upload.id)
+
     return KonspektUploadSuccessResponse(
-        msg="Конспетк загружен",
+        msg="Конспект загружен",
         key="upload.success",
         filename=filename
     )
