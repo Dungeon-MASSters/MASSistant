@@ -33,9 +33,28 @@ class SyntaxAnalyzer:
         return doc
 
     @staticmethod
-    def concat_sentences(doc: stanza.Document) -> str:
-        return ' '.join([token.text for sentence in doc.sentences for token in sentence.tokens])
+    def concat_sentences(
+        doc: stanza.Document,
+        normalize: bool = False,
+        upos: list[str] = []) -> str:
+        if normalize:
+            attribute = 'lemma'
+        else:
+            attribute = 'text'
+
+        words = []
+        for sentence in doc.sentences:
+            for token in sentence.words:
+                if attribute in dir(token):
+                    cur_attr = attribute
+                else:
+                    cur_attr = 'text'
+
+                if 'upos' in dir(token) and token.upos in upos or upos == []:
+                    words.append(getattr(token, cur_attr))
+        
+        return ' '.join(words)
     
-cl = SyntaxAnalyzer()
-doc = cl('Привет. Как дела?')
-print(cl.concat_sentences(doc))
+# NOUN - сущ, VERB или AUX - глагол, ADJ - прилагательное, 
+# ADV - наречие, NUM - числительные, PROPN - местоимения,
+# X - иностранные слова
