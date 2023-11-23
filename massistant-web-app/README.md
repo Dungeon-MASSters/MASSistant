@@ -1,3 +1,11 @@
+# Арсений, это тебе почитать когда придешь
+
+Приложение как в прошлый раз на Vite+React, но теперь обязательно использовать MUI https://mui.com/material-ui/getting-started/usage/ 
+
+Иконки тоже материал, искать можно тут https://mui.com/material-ui/material-icons/?query=egg
+
+Бек будет обычным JSON API на FastAPI (путхон)
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
