@@ -89,3 +89,21 @@ async def upload_konspekt(audio: UploadFile, db: Session = Depends(get_db)) -> K
         key="upload.success",
         filename=filename
     )
+
+# TODO: тут ещё будут роуты для транскрибации и тп, но пока хз как они выглядят
+
+
+@app.get("/api/konspekt/{konspekt_id}")
+def get_konspekt_files_list(konspekt_id: int):
+    # TODO: вернуть список файлов для конспекта по ID
+    #   - сделать запрос к бд
+    #   - можно вернуть просто массив строк
+    #   - если конспекта нет вернуть ошибку как в роутах выше
+    pass
+
+
+@app.get("/api/konspekt/audio/{filename}")
+def get_konspekt_file(filename: str):
+    # TODO: вернуть файл из ./uploads
+    #  - если файла нет вернуть ошибку как в роутах выше
+    pass
