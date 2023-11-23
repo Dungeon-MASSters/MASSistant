@@ -3,6 +3,7 @@ version: '3'
 volumes:
   postgres-data:
   rabbit-data:
+  uploads-data:
 
 services:
   db:
@@ -48,5 +49,7 @@ services:
       - 8080:8080
     environment:
       POSTGRES_URL: "postgresql://postgres:postgres@db:5432/app"
+    volumes:
+      - uploads-data:/app/uploads
     command: [ "sh", "entrypoint.sh" ]
 
