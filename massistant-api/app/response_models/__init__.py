@@ -26,3 +26,5 @@ class KonspektsListItem(BaseModel):
     filename: str
     status: str
     trans_text: Union[str, None]
+    summary: Union[dict, None]
+    glossary: Union[dict, None]

@@ -135,7 +135,9 @@ async def get_all_konspekts(db: Session = Depends(get_db)) -> list[KonspektsList
             original_filename=k.original_filename,
             filename=k.filename,
             status=k.status,
-            trans_text=k.transcribe
+            trans_text=k.transcribe,
+            summary=k.summary,
+            glossary=k.glossary
         ))
 
     return konspekts
@@ -209,15 +211,15 @@ def download_konspekt(kid: int, db: Session = Depends(get_db)):
             error_key="download.invalid_konspekt_id"
         )
 
-
     document = docx.Document()
     document.add_heading(konspekt_upload.original_filename, 0)
     document.add_paragraph("## Транскрибация\n", style='Heading 1')
-    document.add_paragraph("None" if konspekt_upload.transcribe is None else konspekt_upload.transcribe)
+    document.add_paragraph(
+        "None" if konspekt_upload.transcribe is None else konspekt_upload.transcribe)
     document.add_paragraph("## Глоссарий\n", style='Heading 1')
-    document.add_paragraph("- lorem\n"\
-                            + "- ipsum\n"\
-                            + "- dolor\n")
+    document.add_paragraph("- lorem\n"
+                           + "- ipsum\n"
+                           + "- dolor\n")
 
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         document.save(tmp.name)
