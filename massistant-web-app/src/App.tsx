@@ -22,6 +22,7 @@ import { Link, Route, Router, useLocation, useRouter } from "wouter";
 import { MainPage } from "./main_page";
 import { KonspektPage } from "./konspekt_page";
 import { HelpPage } from "./help_page";
+import { LoginPage } from "./login_page";
 import HomeIcon from "@mui/icons-material/Home";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
@@ -71,9 +72,9 @@ function App() {
             >
                 <Toolbar>
                     <Stack spacing={2} direction="row" sx={{ flexGrow: 1 }}>
-                        <Button variant="outlined" style={{ backgroundColor: 'transparent' }}><img src={logo}  /></Button>
+                        <Button variant="outlined" onClick={() => navigate("/")} style={{ backgroundColor: 'transparent' }}><img src={logo}  /></Button>
                     </Stack>
-                    <Button color="inherit">Войти</Button>
+                    <Button color="inherit" onClick={() => navigate("/login_page")}>Войти</Button>
                     <Button color="inherit">Регистрация</Button>
                 </Toolbar>
             </AppBar>
@@ -122,6 +123,9 @@ function App() {
                     <KonspektRouter />
                     <Route path="/help_page">
                         <HelpPage />
+                    </Route>
+                    <Route path="/login_page">
+                        <LoginPage />
                     </Route>
                 </Router>
             </Box>
