@@ -15,7 +15,7 @@ import {
     ListItemButton,
     ListItemIcon,
     ListItemText,
-    CssBaseline
+    CssBaseline, Stack
 } from "@mui/material";
 import { useState } from "react";
 import { Link, Route, Router, useLocation, useRouter } from "wouter";
@@ -25,6 +25,7 @@ import { HelpPage } from "./help_page";
 import HomeIcon from "@mui/icons-material/Home";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
+import logo from "./assets/logo.png"
 
 const KonspektRouter = () => {
     const router = useRouter();
@@ -69,13 +70,9 @@ function App() {
                 sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
             >
                 <Toolbar>
-                    <Typography
-                        variant="h6"
-                        component="div"
-                        sx={{ flexGrow: 1 }}
-                    >
-                        MASSistant
-                    </Typography>
+                    <Stack spacing={2} direction="row" sx={{ flexGrow: 1 }}>
+                        <Button variant="contained" variant="raised" style={{ backgroundColor: 'transparent' }}><img src={logo}  /></Button>
+                    </Stack>
                     <Button color="inherit">Войти</Button>
                     <Button color="inherit">Регистрация</Button>
                 </Toolbar>
@@ -117,7 +114,7 @@ function App() {
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <Toolbar />
-                <h1>MASSistent</h1>
+                <h1>MASSistant</h1>
                 <Router>
                     <Route path="/">
                         <MainPage />
