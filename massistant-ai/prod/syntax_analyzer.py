@@ -62,6 +62,6 @@ class SyntaxAnalyzer:
 # ADV - наречие, NUM - числительные, PROPN - местоимения,
 # X - иностранные слова
 
-ppl = SyntaxAnalyzer()
-doc = ppl('Привет. Как дела? Я съел деда.')
-print(ppl.get_sentences(doc, normalize=True, upos=['NOUN', 'VERB', 'AUX']))
+# ppl = SyntaxAnalyzer()
+# doc = ppl('Привет. Как дела? Я съел деда.')
+# print(ppl.get_sentences(doc, normalize=True, upos=['NOUN', 'VERB', 'AUX']))
