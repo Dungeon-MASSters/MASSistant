@@ -71,7 +71,7 @@ function App() {
             >
                 <Toolbar>
                     <Stack spacing={2} direction="row" sx={{ flexGrow: 1 }}>
-                        <Button variant="contained" variant="raised" style={{ backgroundColor: 'transparent' }}><img src={logo}  /></Button>
+                        <Button variant="raised" style={{ backgroundColor: 'transparent' }}><img src={logo}  /></Button>
                     </Stack>
                     <Button color="inherit">Войти</Button>
                     <Button color="inherit">Регистрация</Button>
