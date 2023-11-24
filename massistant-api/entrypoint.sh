@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-set -e
+bash /wait-for-it.sh db:5432
 
 alembic check
 
