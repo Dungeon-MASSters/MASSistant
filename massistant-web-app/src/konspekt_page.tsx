@@ -15,6 +15,7 @@ import { useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 import { apiUrl } from "./utils/api";
+import moment from "moment";
 
 const uploadKonspekt = (audio: File) => {
     const url = apiUrl + "/konspekt";
@@ -36,6 +37,7 @@ const getKonspektsList = () => {
 
 const KonspektCard = styled(Paper)(({ theme }) => ({
     height: 200,
+    // width: "80%",
     padding: theme.spacing(2),
     ...theme.typography.body2
 }));
@@ -60,8 +62,21 @@ export const KonspektPage = () => {
                     {getKonspektsQuery.data.map((item: any) => {
                         return (
                             <KonspektCard variant="outlined" key={item.id}>
-                                <Stack>
-                                    <span>{item.original_filename}</span>
+                                <Stack
+                                    direction="column"
+                                    justifyContent="space-between"
+                                >
+                                    {/* FUCK */}
+                                    <Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center"
+                                    >
+                                        <span>{item.original_filename}</span>
+                                        <span>
+                                            {moment(item.created_at).calendar()}
+                                        </span>
+                                    </Stack>
                                     <audio
                                         controls
                                         src={`${apiUrl}/konspekt/audio/${item.filename}`}
