@@ -31,23 +31,6 @@ import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import logo from "./assets/logo.png"
 import { create } from "@mui/material/styles/createTransitions";
 import { ThemeProvider } from "@emotion/react";
-declare module "@mui/material/styles" {
-    interface Palette {
-        white: string;
-    }
-    interface PaletteOptions {
-        white?: string;
-    }
-}
-  
-declare module "@mui/material/AppBar" {
-    interface AppBarPropsColorOverrides {
-        white: true;
-    }
-}
-// import './customPalette.module';
-// import './customAppBar.module';
-// import './customButton.module';
 
 const KonspektRouter = () => {
     const router = useRouter();
@@ -108,7 +91,7 @@ function App() {
         }
     ];
 
-    console.log(myTheme);
+    // console.log(myTheme);
     return (
         <ThemeProvider theme={myTheme}>
             <Box sx={{ display: "flex" }}>

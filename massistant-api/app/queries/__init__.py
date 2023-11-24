@@ -22,3 +22,7 @@ def get_konspekts(db: Session) -> list[KonspektUpload]:
 
 def get_konspekt_by_id(db: Session, id: int) -> Union[KonspektUpload, None]:
     return db.query(KonspektUpload).get(id)
+
+def delete_konspekt_by_id(db: Session, id: int):
+    db.query(KonspektUpload).filter_by(id=id).delete()
+    db.commit()

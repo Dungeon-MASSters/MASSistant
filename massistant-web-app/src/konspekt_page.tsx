@@ -2,7 +2,8 @@ import {
     AudioFileRounded,
     UploadFileRounded,
     Save,
-    ExpandMore
+    ExpandMore,
+    PlayArrow
 } from "@mui/icons-material";
 import {
     Accordion,
@@ -19,16 +20,19 @@ import {
     styled,
     CardMedia,
     Toolbar,
-    LinearProgress, IconButton, createTheme
+    LinearProgress,
+    IconButton,
+    Link,
+    Slider, createTheme
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import axios from "axios";
 import { useRef, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 import { apiUrl } from "./utils/api";
 import moment from "moment";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { KonspektPlayer } from "./konspekt_player";
 import './konspekt-page.css';
 
 const uploadKonspekt = (audio: File) => {
@@ -75,7 +79,7 @@ const GlossaryItem = ({
     );
 };
 
-export const KonspektPage = () => {
+export const KonspektPage = (props) => {
     const [audio, setAudio] = useState<File | null>(null);
     const [uploadState, setUploadState] = useState("");
     const scrollTarget = useRef<HTMLDivElement | null>(null);
@@ -86,39 +90,62 @@ export const KonspektPage = () => {
         {}
     );
 
+    // const handleDownload = (id) => {
+    //     axios.get(`${apiUrl}/konspekt/${id}/download`);
+    // };
+
+    const handleDelete = (id) => {
+        axios
+            .delete(`${apiUrl}/konspekt/${id}`)
+            .then(() => getKonspektsQuery.refetch());
+    };
+
     return (
         <>
             {getKonspektsQuery.isLoading ? (
                 <CircularProgress />
             ) : (
                 <Stack spacing={'1em'}>
-                    {getKonspektsQuery.data.map((item: any) => {
+                    {getKonspektsQuery.data.map((item: any, index) => {
                         return (
-                            <Accordion className="list-accordion" sx={{
+                            <Accordion key={item.id} className="list-accordion cheat" sx={{
                                 borderRadius: '16px',
                             }} disableGutters>
                                 <AccordionSummary expandIcon={<ExpandMore />}>
                                     <div style={{
                                         display: 'flex',
-                                        justifyContent: 'space-between',
+                                        flexDirection: 'column',
                                         width: '100%',
                                     }}>
                                         <div style={{
                                             display: 'flex',
-                                            flexGrow: 1,
                                             justifyContent: 'space-between',
-                                            alignItems: 'center'
+                                            width: '100%',
                                         }}>
-                                            <Typography variant="h6"><span>{item.original_filename}</span></Typography>
-                                            <span style={{
-                                                fontSize: '1em',
-                                                color: '#8d46f4',
-                                                opacity: 0.75,
-                                            }}>{moment(item.created_at).calendar()}</span>
+                                            <div style={{
+                                                display: 'flex',
+                                                flexGrow: 1,
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center'
+                                            }}>
+                                                <Typography variant="h6"><span>{item.original_filename}</span></Typography>
+                                                <span style={{
+                                                    fontSize: '1em',
+                                                    color: '#8d46f4',
+                                                    opacity: 0.75,
+                                                }}>{moment(item.created_at).calendar()}</span>
+                                            </div>
+                                            <IconButton onClick={() =>
+                                                            handleDelete(item.id)
+                                                        }>
+                                                <DeleteIcon />
+                                            </IconButton>
                                         </div>
-                                        <IconButton aria-label="delete">
-                                            <DeleteIcon />
-                                        </IconButton>
+                                        <div className="player-container">
+                                            <KonspektPlayer
+                                                filename={item.filename}
+                                            ></KonspektPlayer>
+                                        </div>
                                     </div>
                                 </AccordionSummary>
                                 <AccordionDetails>
@@ -162,7 +189,16 @@ export const KonspektPage = () => {
                                             </Typography>
                                         </AccordionDetails>
                                     </Accordion>
-                                    <Button style={{margin: '10px', float: 'right'}} variant="contained">Скачать</Button>
+                                    <Link
+                                        style={{
+                                            margin: "10px",
+                                            float: "right"
+                                        }}
+                                        variant="button"
+                                        href={`${apiUrl}/konspekt/${item.id}/download`}
+                                    >
+                                        Скачать
+                                    </Link>
                                 </AccordionDetails>
                             </Accordion>
                         );
