@@ -74,7 +74,7 @@ const GlossaryItem = ({
     );
 };
 
-export const KonspektPage = () => {
+export const KonspektPage = (props) => {
     const [audio, setAudio] = useState<File | null>(null);
     const [uploadState, setUploadState] = useState("");
     const scrollTarget = useRef<HTMLDivElement | null>(null);
@@ -85,22 +85,30 @@ export const KonspektPage = () => {
         {}
     );
 
+    const handleDownload = (index) => {
+        alert(index);
+        }
+
+    const handleDelete = (index) => {
+        alert(index);
+        }
+
     return (
         <>
             {getKonspektsQuery.isLoading ? (
                 <CircularProgress />
             ) : (
                 <Stack>
-                    {getKonspektsQuery.data.map((item: any) => {
+                    {getKonspektsQuery.data.map((item: any, index) => {
                         return (
                             <Accordion>
                                 <AccordionSummary expandIcon={<ExpandMore />}>
                                     <Typography>
                                         <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                                         <h2>{item.original_filename}</h2>
-                                            <IconButton aria-label="delete">
-                                            <DeleteIcon />
-                                        </IconButton>
+                                            <IconButton  onClick={() => handleDelete(index)}>
+                                                <DeleteIcon />
+                                            </IconButton>
                                         </div>
                                         <span>
                                             {moment(item.created_at).calendar()}
@@ -150,7 +158,7 @@ export const KonspektPage = () => {
                                             </Typography>
                                         </AccordionDetails>
                                     </Accordion>
-                                    <Button style={{margin: '10px', float: 'right'}} variant="contained">Скачать</Button>
+                                    <Button onClick={() => handleDownload(index)} style={{margin: '10px', float: 'right'}} variant="contained">Скачать</Button>
                                 </AccordionDetails>
                             </Accordion>
                         );
