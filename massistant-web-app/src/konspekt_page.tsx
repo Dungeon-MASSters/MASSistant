@@ -57,10 +57,17 @@ export const KonspektPage = () => {
                 <CircularProgress />
             ) : (
                 <Stack spacing={2}>
-                    {getKonspektsQuery.data.map((query: any) => {
+                    {getKonspektsQuery.data.map((item: any) => {
                         return (
-                            <KonspektCard variant="outlined" key={query.id}>
-                                <span>{query.original_filename}</span>
+                            <KonspektCard variant="outlined" key={item.id}>
+                                <Stack>
+                                    <span>{item.original_filename}</span>
+                                    <audio
+                                        controls
+                                        src={`${apiUrl}/konspekt/audio/${item.filename}`}
+                                        preload="none"
+                                    />
+                                </Stack>
                             </KonspektCard>
                         );
                     })}
