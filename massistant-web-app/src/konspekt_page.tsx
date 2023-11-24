@@ -144,6 +144,7 @@ export const KonspektPage = () => {
                                             </Typography>
                                         </AccordionDetails>
                                     </Accordion>
+                                    <Button style={{margin: '10px', float: 'right'}} variant="contained">Скачать</Button>
                                 </AccordionDetails>
                             </Accordion>
                         );
