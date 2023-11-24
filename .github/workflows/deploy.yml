@@ -28,8 +28,10 @@ jobs:
     - name: Setup keys
       run: mkdir -p ~/.ssh && echo $DEPLOY_KEY > ~/.ssh/id_ed25519
     - name: Replace passwords
-      run: sed -i -e "s/PG_PASS/$DATABASE_PASSWORD/" deploy-docker-compose.yml
+      run: sed -i -e "s/PG_PASS/${{ secrets.DATABASE_PASSWORD }}/" deploy-docker-compose.yml
     - name: Deploy Docker compose
+      env:
+        DOCKER_HOST: ${{ secrets.DOCKER_HOST }}
       run: docker compose --project-name massistant-demo --file deploy-docker-compose.yml up --build -d
 
 
