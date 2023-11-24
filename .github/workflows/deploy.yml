@@ -37,5 +37,5 @@ jobs:
         REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
         REMOTE_USER: ${{ secrets.DEPLOY_USER }}
         TARGET: ${{ secrets.DEPLOY_TARGET }}
-        SCRIPT_AFTER: cd ${{ secrets.DEPLOY_TARGET }} && docker compose --project-name massistant-demo --file deploy-docker-compose.yml up --build -d
+        SCRIPT_AFTER: cd ${{ secrets.DEPLOY_TARGET }} && docker-compose --project-name massistant-demo --file deploy-docker-compose.yml up --build -d
 
