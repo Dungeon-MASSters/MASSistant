@@ -2,7 +2,8 @@ import {
     AudioFileRounded,
     UploadFileRounded,
     Save,
-    ExpandMore
+    ExpandMore,
+    PlayArrow
 } from "@mui/icons-material";
 import {
     Accordion,
@@ -21,16 +22,17 @@ import {
     Toolbar,
     LinearProgress,
     IconButton,
-    Link
+    Link,
+    Slider
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import axios from "axios";
 import { useRef, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 import { apiUrl } from "./utils/api";
 import moment from "moment";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { KonspektPlayer } from "./konspekt_player";
 
 const uploadKonspekt = (audio: File) => {
     const url = apiUrl + "/konspekt";
@@ -107,28 +109,37 @@ export const KonspektPage = (props) => {
                         return (
                             <Accordion>
                                 <AccordionSummary expandIcon={<ExpandMore />}>
-                                    <Typography>
-                                        <div
-                                            style={{
-                                                display: "flex",
-                                                justifyContent: "center",
-                                                alignItems: "center"
-                                            }}
-                                        >
-                                            <h2>{item.original_filename}</h2>
-                                            <IconButton
-                                                onClick={() =>
-                                                    handleDelete(item.id)
-                                                }
+                                    <Stack sx={{ width: "100%" }} spacing={1}>
+                                        <Typography>
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    justifyContent: "start",
+                                                    alignItems: "center"
+                                                }}
                                             >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </div>
-                                        <span>
-                                            {moment(item.created_at).calendar()}
-                                        </span>
-                                        <h6 />
-                                    </Typography>
+                                                <h2>
+                                                    {item.original_filename}
+                                                </h2>
+                                                <IconButton
+                                                    onClick={() =>
+                                                        handleDelete(item.id)
+                                                    }
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </div>
+                                            <span>
+                                                {moment(
+                                                    item.created_at
+                                                ).calendar()}
+                                            </span>
+                                        </Typography>
+
+                                        <KonspektPlayer
+                                            filename={item.filename}
+                                        ></KonspektPlayer>
+                                    </Stack>
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <Accordion variant="outlined">
