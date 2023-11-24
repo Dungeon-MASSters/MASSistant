@@ -7,10 +7,10 @@ celeryApp = Celery(
 )
 
 
-def send_transcribe_task(id: int, filename: str):
+def send_transcribe_task(id: int, filename: str, mode: str):
     celeryApp.send_task(
         'tasks.do_trans_stuff',
-        args=[id, filename],
+        args=[id, filename, mode],
         kwargs={}
     )
 
