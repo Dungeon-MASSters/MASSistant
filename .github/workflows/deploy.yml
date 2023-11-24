@@ -32,6 +32,8 @@ jobs:
     - name: Deploy Docker compose
       env:
         DOCKER_HOST: ${{ secrets.DOCKER_HOST }}
-      run: docker compose --project-name massistant-demo --file deploy-docker-compose.yml up --build -d
+      run: |
+        echo $DOCKER_HOST
+        docker compose --project-name massistant-demo --file deploy-docker-compose.yml up --build -d
 
 
