@@ -19,7 +19,9 @@ import {
     styled,
     CardMedia,
     Toolbar,
-    LinearProgress, IconButton
+    LinearProgress,
+    IconButton,
+    Link
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import axios from "axios";
@@ -85,13 +87,15 @@ export const KonspektPage = (props) => {
         {}
     );
 
-    const handleDownload = (index) => {
-        alert(index);
-        }
+    // const handleDownload = (id) => {
+    //     axios.get(`${apiUrl}/konspekt/${id}/download`);
+    // };
 
-    const handleDelete = (index) => {
-        alert(index);
-        }
+    const handleDelete = (id) => {
+        axios
+            .delete(`${apiUrl}/konspekt/${id}`)
+            .then(() => getKonspektsQuery.refetch());
+    };
 
     return (
         <>
@@ -104,9 +108,19 @@ export const KonspektPage = (props) => {
                             <Accordion>
                                 <AccordionSummary expandIcon={<ExpandMore />}>
                                     <Typography>
-                                        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                        <h2>{item.original_filename}</h2>
-                                            <IconButton  onClick={() => handleDelete(index)}>
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center"
+                                            }}
+                                        >
+                                            <h2>{item.original_filename}</h2>
+                                            <IconButton
+                                                onClick={() =>
+                                                    handleDelete(item.id)
+                                                }
+                                            >
                                                 <DeleteIcon />
                                             </IconButton>
                                         </div>
@@ -158,7 +172,16 @@ export const KonspektPage = (props) => {
                                             </Typography>
                                         </AccordionDetails>
                                     </Accordion>
-                                    <Button onClick={() => handleDownload(index)} style={{margin: '10px', float: 'right'}} variant="contained">Скачать</Button>
+                                    <Link
+                                        style={{
+                                            margin: "10px",
+                                            float: "right"
+                                        }}
+                                        variant="button"
+                                        href={`${apiUrl}/konspekt/${item.id}/download`}
+                                    >
+                                        Скачать
+                                    </Link>
                                 </AccordionDetails>
                             </Accordion>
                         );

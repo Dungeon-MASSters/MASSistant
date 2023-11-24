@@ -13,3 +13,11 @@ def send_transcribe_task(id: int, filename: str):
         args=[id, filename],
         kwargs={}
     )
+
+
+celeryFeedback = Celery(
+    'feedback',
+    'rpc://',
+    broker='pyamqp://app:dungeon@rabbit.dungeon-massters.pro:5672/'
+)
+

@@ -5,13 +5,14 @@ from typing import Annotated, Union
 import base64
 
 import aiofiles
+from celery.utils.log import logging
 from fastapi import Depends, FastAPI, File, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.queries import create_konspekt_upload, get_konspekt_by_id, get_konspekts
+from app.queries import create_konspekt_upload, delete_konspekt_by_id, get_konspekt_by_id, get_konspekts
 from app.response_models import (
     DefaultErrorResponse,
     KonspektsListItem,
@@ -20,7 +21,9 @@ from app.response_models import (
 )
 from app.request_models import UploadTranscribedText
 
-from app.tasks import send_transcribe_task
+from app.tasks import send_transcribe_task, celeryFeedback
+
+import tempfile
 
 app = FastAPI()
 
@@ -151,6 +154,23 @@ def get_konspekt_file(filename: str):
     headers = {'Content-Disposition': f'attachment; filename="{filename}"'}
     return StreamingResponse(iterfile(), headers=headers, media_type=ext[0])
 
+# @celeryFeedback.task
+# def set_transcribed_text(konspekt_id: int, text: str):
+#     print("Celery feedback: Got transcribed text for id =", konspekt_id)
+#
+#     db = get_db()
+#     if db is None:
+#         logging.er
+#
+#     konspekt_upload = get_konspekt_by_id(db, konspekt_id)
+#
+#     if konspekt_upload is None:
+#         return DefaultErrorResponse(
+#             error_msg="Неверный ID конспекта",
+#             error_key="transcribe_upload.invalid_konspekt_id"
+#         )
+
+
 @app.post("/api/konspekt/{kid}/transcribed")
 def set_konspket_transcribed_text(kid: int, transcribed: UploadTranscribedText, db: Session = Depends(get_db)):
     print("Got transcribed text for id =", kid)
@@ -171,4 +191,42 @@ def set_konspket_transcribed_text(kid: int, transcribed: UploadTranscribedText, 
     return TranscribeUploadSuccessResponse(
         msg="Транскрибированный текст сохранен в базу данных",
         key="transcribe_upload.success"
+    )
+
+
+@app.get("/api/konspekt/{kid}/download")
+def download_konspekt(kid: int, db: Session = Depends(get_db)):
+    konspekt_upload = get_konspekt_by_id(db, kid)
+
+    if konspekt_upload is None:
+        return DefaultErrorResponse(
+            error_msg="Неверный ID конспекта",
+            error_key="download.invalid_konspekt_id"
+        )
+
+    # TODO: PDF или DOCX
+    fake_document = f"# {konspekt_upload.original_filename}\n"\
+        + "\n"\
+        + "## Транскрибация\n"\
+        + "\n"\
+        + f"{konspekt_upload.transcribe}\n"\
+        + "\n"\
+        + "## Глоссарий\n"\
+        + "\n"\
+        + "- lorem\n"\
+        + "- ipsum\n"\
+        + "- dolor\n"
+
+    with tempfile.NamedTemporaryFile(delete=False) as tmp:
+        tmp.write(fake_document.encode())
+        return FileResponse(tmp.name, media_type='text/plain')
+
+
+@app.delete("/api/konspekt/{kid}")
+def delete_konspekt(kid: int, db: Session = Depends(get_db)):
+    delete_konspekt_by_id(db, kid)
+
+    return TranscribeUploadSuccessResponse(
+        msg="Конспект удален",
+        key="delete.success"
     )
