@@ -24,11 +24,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v3
     - name: Setup keys
       run: mkdir -p ~/.ssh && echo $DEPLOY_KEY > ~/.ssh/id_ed25519
     - name: Replace passwords
       run: sed -i -e "s/PG_PASS/$DATABASE_PASSWORD/" deploy-docker-compose.yml
-    - uses: actions/checkout@v3
     - name: Deploy Docker compose
       run: docker compose --project-name massistant-demo --file deploy-docker-compose.yml up --build -d
 
