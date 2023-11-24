@@ -23,6 +23,7 @@ import { MainPage } from "./main_page";
 import { KonspektPage } from "./konspekt_page";
 import { HelpPage } from "./help_page";
 import { LoginPage } from "./login_page";
+import { RegPage } from "./reg_page";
 import HomeIcon from "@mui/icons-material/Home";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
@@ -75,7 +76,7 @@ function App() {
                         <Button variant="outlined" onClick={() => navigate("/")} style={{ backgroundColor: 'transparent' }}><img src={logo}  /></Button>
                     </Stack>
                     <Button color="inherit" onClick={() => navigate("/login_page")}>Войти</Button>
-                    <Button color="inherit">Регистрация</Button>
+                    <Button color="inherit" onClick={() => navigate("/reg_page")}>Регистрация</Button>
                 </Toolbar>
             </AppBar>
             <Drawer
@@ -126,6 +127,9 @@ function App() {
                     </Route>
                     <Route path="/login_page">
                         <LoginPage />
+                    </Route>
+                    <Route path="/reg_page">
+                        <RegPage />
                     </Route>
                 </Router>
             </Box>
