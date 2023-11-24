@@ -62,7 +62,7 @@ def read_item(item_id: int, q: Union[str, None] = None):
 
 
 @app.post("/api/konspekt")
-async def upload_konspekt(audio: UploadFile, db: Session = Depends(get_db)) -> KonspektUploadSuccessResponse | DefaultErrorResponse:
+async def upload_konspekt(audio: UploadFile, db: Session = Depends(get_db)) -> Union[KonspektUploadSuccessResponse, DefaultErrorResponse]:
     filename = audio.filename
     og_filename = audio.filename
     mime = audio.content_type
