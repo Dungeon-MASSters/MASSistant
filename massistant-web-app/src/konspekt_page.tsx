@@ -16,7 +16,10 @@ import {
     Paper,
     Stack,
     Typography,
-    styled, CardMedia, Toolbar
+    styled,
+    CardMedia,
+    Toolbar,
+    LinearProgress
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import axios from "axios";
@@ -96,10 +99,31 @@ export const KonspektPage = () => {
                                         <span>
                                             {moment(item.created_at).calendar()}
                                         </span>
-                                        <h6/>
+                                        <h6 />
                                     </Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
+                                    <Accordion variant="outlined">
+                                        <AccordionSummary
+                                            expandIcon={<ExpandMore />}
+                                        >
+                                            <h3>
+                                                Транскрибация (прям свежая с
+                                                бекенда)
+                                            </h3>
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            <Typography>
+                                                {item.trans_text ? (
+                                                    <p>
+                                                        Текст: {item.trans_text}
+                                                    </p>
+                                                ) : (
+                                                    <LinearProgress />
+                                                )}
+                                            </Typography>
+                                        </AccordionDetails>
+                                    </Accordion>
                                     <Accordion variant="outlined">
                                         <AccordionSummary
                                             expandIcon={<ExpandMore />}
