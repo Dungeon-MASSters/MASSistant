@@ -19,7 +19,7 @@ import {
     styled,
     CardMedia,
     Toolbar,
-    LinearProgress, IconButton
+    LinearProgress, IconButton, createTheme
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import axios from "axios";
@@ -29,6 +29,7 @@ import { useQuery } from "react-query";
 import { apiUrl } from "./utils/api";
 import moment from "moment";
 import DeleteIcon from "@mui/icons-material/Delete";
+import './konspekt-page.css';
 
 const uploadKonspekt = (audio: File) => {
     const url = apiUrl + "/konspekt";
@@ -90,33 +91,43 @@ export const KonspektPage = () => {
             {getKonspektsQuery.isLoading ? (
                 <CircularProgress />
             ) : (
-                <Stack>
+                <Stack spacing={'1em'}>
                     {getKonspektsQuery.data.map((item: any) => {
                         return (
-                            <Accordion>
+                            <Accordion className="list-accordion" sx={{
+                                borderRadius: '16px',
+                            }} disableGutters>
                                 <AccordionSummary expandIcon={<ExpandMore />}>
-                                    <Typography>
-                                        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                        <h2>{item.original_filename}</h2>
-                                            <IconButton aria-label="delete">
+                                    <div style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        width: '100%',
+                                    }}>
+                                        <div style={{
+                                            display: 'flex',
+                                            flexGrow: 1,
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center'
+                                        }}>
+                                            <Typography variant="h6"><span>{item.original_filename}</span></Typography>
+                                            <span style={{
+                                                fontSize: '1em',
+                                                color: '#8d46f4',
+                                                opacity: 0.75,
+                                            }}>{moment(item.created_at).calendar()}</span>
+                                        </div>
+                                        <IconButton aria-label="delete">
                                             <DeleteIcon />
                                         </IconButton>
-                                        </div>
-                                        <span>
-                                            {moment(item.created_at).calendar()}
-                                        </span>
-                                        <h6 />
-                                    </Typography>
+                                    </div>
                                 </AccordionSummary>
                                 <AccordionDetails>
-                                    <Accordion variant="outlined">
+                                    <Accordion sx={{ boxShadow: 'none' }} disableGutters>
                                         <AccordionSummary
                                             expandIcon={<ExpandMore />}
                                         >
-                                            <h3>
-                                                Транскрибация (прям свежая с
-                                                бекенда)
-                                            </h3>
+                                            <span style={{ fontWeight: 'bold', fontSize: '1em', opacity: 0.8 }}>
+                                                Транскрибация (прям свежая с бекенда)</span>
                                         </AccordionSummary>
                                         <AccordionDetails>
                                             <Typography>
@@ -130,11 +141,12 @@ export const KonspektPage = () => {
                                             </Typography>
                                         </AccordionDetails>
                                     </Accordion>
-                                    <Accordion variant="outlined">
+                                    <Accordion sx={{ boxShadow: 'none' }} disableGutters>
                                         <AccordionSummary
                                             expandIcon={<ExpandMore />}
                                         >
-                                            <h3>Глоссарий</h3>
+                                            <span style={{ fontWeight: 'bold', fontSize: '1em', opacity: 0.8 }}>
+                                                Глоссарий</span>
                                         </AccordionSummary>
                                         <AccordionDetails>
                                             <Typography>
