@@ -94,6 +94,11 @@ export const KonspektPage = () => {
                         setUploadState("uploading");
 
                         try {
+                            if (e.target.files === null) {
+                                setUploadState("error");
+                                return;
+                            }
+
                             let res = await uploadKonspekt(e.target.files[0]);
                             console.log(res);
                             setUploadState("done");
