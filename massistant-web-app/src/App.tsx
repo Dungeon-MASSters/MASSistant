@@ -10,14 +10,19 @@ import {
     Theme,
     Box,
     Drawer,
-    List, ListItem, ListItemButton, ListItemIcon, ListItemText, CssBaseline
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    CssBaseline
 } from "@mui/material";
 import { useState } from "react";
-import { Link, Route, Router, useRouter } from "wouter";
+import { Link, Route, Router, useLocation, useRouter } from "wouter";
 import { MainPage } from "./main_page";
 import { KonspektPage } from "./konspekt_page";
-import HomeIcon from '@mui/icons-material/Home';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
+import HomeIcon from "@mui/icons-material/Home";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 
 const KonspektRouter = () => {
     const router = useRouter();
@@ -34,14 +39,23 @@ const KonspektRouter = () => {
 function App() {
     const [count, setCount] = useState(0);
 
+    const [_, navigate] = useLocation();
+
     const drawerWidth = 360;
     const theme = useTheme();
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: "flex" }}>
             <CssBaseline />
-            <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+            <AppBar
+                position="fixed"
+                sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            >
                 <Toolbar>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                    <Typography
+                        variant="h6"
+                        component="div"
+                        sx={{ flexGrow: 1 }}
+                    >
                         MASSistant
                     </Typography>
                     <Button color="inherit">Войти</Button>
@@ -51,25 +65,38 @@ function App() {
             <Drawer
                 variant="permanent"
                 sx={{
-                  width: drawerWidth,
-                  flexShrink: 0,
-                  [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+                    width: drawerWidth,
+                    flexShrink: 0,
+                    [`& .MuiDrawer-paper`]: {
+                        width: drawerWidth,
+                        boxSizing: "border-box"
+                    }
                 }}
-              >
+            >
                 <Toolbar />
-                <Box sx={{ overflow: 'auto' }}>
-                  <List>
-                    {['main', 'konspect'].map((text, index) => (
-                      <ListItem key={text} disablePadding>
-                        <ListItemButton href={index % 2 === 0 ? "/" : "/konspekt"}>
-                          <ListItemIcon>
-                            {index % 2 === 0 ? <HomeIcon /> : <MenuBookIcon />}
-                          </ListItemIcon>
-                          <ListItemText primary={text} />
-                        </ListItemButton>
-                      </ListItem>
-                    ))}
-                  </List>
+                <Box sx={{ overflow: "auto" }}>
+                    <List>
+                        {["main", "konspect"].map((text, index) => (
+                            <ListItem key={text} disablePadding>
+                                <ListItemButton
+                                    onClick={() =>
+                                        navigate(
+                                            index % 2 === 0 ? "/" : "/konspekt"
+                                        )
+                                    }
+                                >
+                                    <ListItemIcon>
+                                        {index % 2 === 0 ? (
+                                            <HomeIcon />
+                                        ) : (
+                                            <MenuBookIcon />
+                                        )}
+                                    </ListItemIcon>
+                                    <ListItemText primary={text} />
+                                </ListItemButton>
+                            </ListItem>
+                        ))}
+                    </List>
                 </Box>
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
