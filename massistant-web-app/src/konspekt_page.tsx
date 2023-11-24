@@ -16,7 +16,7 @@ import {
     Paper,
     Stack,
     Typography,
-    styled
+    styled, CardMedia, Toolbar
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import axios from "axios";
@@ -81,7 +81,13 @@ export const KonspektPage = () => {
                                         <span>
                                             {moment(item.created_at).calendar()}
                                         </span>
+                                        <h6/>
                                     </Typography>
+                                    <CardMedia component="audio"
+                                          autoPlay
+                                          controls
+                                          src="../audio.mp3"
+                                        />
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <Typography>
