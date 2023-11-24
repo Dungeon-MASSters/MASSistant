@@ -2,8 +2,6 @@ import gc
 import torch
 from typing import Callable
 
-print(torch.cuda.is_available())
-
 def collect_cache() -> None:
     torch.cuda.empty_cache()
     gc.collect()

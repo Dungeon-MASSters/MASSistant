@@ -36,8 +36,6 @@ class GigaChat:
             if keywords is not None:
                 d.update({key: keywords})
 
-            break
-
         df = pd.DataFrame(d.items(), columns=['chunk', 'keywords'])
 
         return df

@@ -62,6 +62,17 @@ const KonspektCard = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2
 }));
 
+const getTime = (timestamp: number): string => {
+  const date = new Date(1000 * timestamp); // unix timestamp in seconds to milliseconds conversion
+  const time = date.toTimeString();
+  return time.substring(3, 8);
+};
+
+const handleTimeCode = (timestamp) => {
+        alert(timestamp)
+    };
+
+
 const GlossaryItem = ({
     word,
     definition,
@@ -76,7 +87,7 @@ const GlossaryItem = ({
             <span>
                 {word} - {definition}
             </span>
-            <span>00:00</span>
+            <Link  variant="button" onClick={() => handleTimeCode(timestamp)} >{getTime(timestamp)}</Link>
         </Stack>
     );
 };
@@ -205,7 +216,7 @@ export const KonspektPage = (props) => {
                                                         <GlossaryItem
                                                             word="Lorem"
                                                             definition="Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat."
-                                                            timestamp={30}
+                                                            timestamp={67}
                                                         />
                                                     </li>
                                                 </ul>
