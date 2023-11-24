@@ -151,8 +151,7 @@ def get_konspekt_file(filename: str):
     headers = {'Content-Disposition': f'attachment; filename="{filename}"'}
     return StreamingResponse(iterfile(), headers=headers, media_type=ext[0])
 
-
-@app.post("/api/konspekts/{kid}/transcribed")
+@app.post("/api/konspekt/{kid}/transcribed")
 def set_konspket_transcribed_text(kid: int, transcribed: UploadTranscribedText, db: Session = Depends(get_db)):
     print("Got transcribed text for id =", kid)
 
