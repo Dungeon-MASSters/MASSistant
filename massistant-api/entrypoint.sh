@@ -2,6 +2,8 @@
 
 set -e
 
+sh wait-for-it.sh db:5432
+
 alembic check
 
 alembic upgrade head
