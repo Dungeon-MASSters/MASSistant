@@ -5,13 +5,14 @@ import axios from "axios";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useQuery } from "react-query";
+import { apiUrl } from "./utils/api";
 
 type konspektInputs = {
     audio: FileList;
 };
 
 const uploadKonspekt = (audio: File) => {
-    const url = import.meta.env.VITE_API_ROOT + "/konspekt";
+    const url = apiUrl + "/konspekt";
 
     let formData = new FormData();
     formData.append("audio", audio);
