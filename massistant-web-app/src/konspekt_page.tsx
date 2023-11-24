@@ -98,11 +98,6 @@ export const KonspektPage = () => {
                                         </span>
                                         <h6/>
                                     </Typography>
-                                    <CardMedia component="audio"
-                                          autoPlay
-                                          controls
-                                          src="../audio.mp3"
-                                        />
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <Accordion variant="outlined">
