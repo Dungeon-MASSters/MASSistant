@@ -21,8 +21,10 @@ import { useState } from "react";
 import { Link, Route, Router, useLocation, useRouter } from "wouter";
 import { MainPage } from "./main_page";
 import { KonspektPage } from "./konspekt_page";
+import { HelpPage } from "./help_page";
 import HomeIcon from "@mui/icons-material/Home";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
+import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 
 const KonspektRouter = () => {
     const router = useRouter();
@@ -52,6 +54,10 @@ function App() {
         {
             title: "Конспект",
             route: "/konspekt"
+        },
+        {
+            title: "Справка",
+            route: "/help_page"
         }
     ];
 
@@ -94,11 +100,13 @@ function App() {
                                     onClick={() => navigate(item.route)}
                                 >
                                     <ListItemIcon>
-                                        {index % 2 === 0 ? (
+                                        {index % 3 === 0 ? (
                                             <HomeIcon />
-                                        ) : (
+                                        ) : (index % 3 === 1 ? (
                                             <MenuBookIcon />
-                                        )}
+                                        ) : (
+                                            <QuestionMarkIcon />
+                                        ))}
                                     </ListItemIcon>
                                     <ListItemText primary={item.title} />
                                 </ListItemButton>
@@ -115,6 +123,9 @@ function App() {
                         <MainPage />
                     </Route>
                     <KonspektRouter />
+                    <Route path="/help_page">
+                        <HelpPage />
+                    </Route>
                 </Router>
             </Box>
         </Box>
