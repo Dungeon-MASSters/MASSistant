@@ -51,6 +51,25 @@ const KonspektCard = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2
 }));
 
+const GlossaryItem = ({
+    word,
+    definition,
+    timestamp
+}: {
+    word: string;
+    definition: string;
+    timestamp: number;
+}) => {
+    return (
+        <Stack direction="row" justifyContent="space-between">
+            <span>
+                {word} - {definition}
+            </span>
+            <span>00:00</span>
+        </Stack>
+    );
+};
+
 export const KonspektPage = () => {
     const [audio, setAudio] = useState<File | null>(null);
     const [uploadState, setUploadState] = useState("");
@@ -71,11 +90,7 @@ export const KonspektPage = () => {
                     {getKonspektsQuery.data.map((item: any) => {
                         return (
                             <Accordion>
-                                <AccordionSummary
-                                    expandIcon={<ExpandMore />}
-                                    aria-controls="panel1a-content"
-                                    id="panel1a-header"
-                                >
+                                <AccordionSummary expandIcon={<ExpandMore />}>
                                     <Typography>
                                         <h2>{item.original_filename}</h2>
                                         <span>
@@ -84,47 +99,26 @@ export const KonspektPage = () => {
                                     </Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
-                                    <Typography>
-                                        Lorem ipsum dolor sit amet, officia
-                                        excepteur ex fugiat reprehenderit enim
-                                        labore culpa sint ad nisi Lorem pariatur
-                                        mollit ex esse exercitation amet. Nisi
-                                        anim cupidatat excepteur officia.
-                                        Reprehenderit nostrud nostrud ipsum
-                                        Lorem est aliquip amet voluptate
-                                        voluptate dolor minim nulla est
-                                        proident. Nostrud officia pariatur ut
-                                        officia. Sit irure elit esse ea nulla
-                                        sunt ex occaecat reprehenderit commodo
-                                        officia dolor Lorem duis laboris
-                                        cupidatat officia voluptate. Culpa
-                                        proident adipisicing id nulla nisi
-                                        laboris ex in Lorem sunt duis officia
-                                        eiusmod. Aliqua reprehenderit commodo ex
-                                        non excepteur duis sunt velit enim.
-                                        Voluptate laboris sint cupidatat ullamco
-                                        ut ea consectetur et est culpa et culpa
-                                        duis. Lorem ipsum dolor sit amet,
-                                        officia excepteur ex fugiat
-                                        reprehenderit enim labore culpa sint ad
-                                        nisi Lorem pariatur mollit ex esse
-                                        exercitation amet. Nisi anim cupidatat
-                                        excepteur officia. Reprehenderit nostrud
-                                        nostrud ipsum Lorem est aliquip amet
-                                        voluptate voluptate dolor minim nulla
-                                        est proident. Nostrud officia pariatur
-                                        ut officia. Sit irure elit esse ea nulla
-                                        sunt ex occaecat reprehenderit commodo
-                                        officia dolor Lorem duis laboris
-                                        cupidatat officia voluptate. Culpa
-                                        proident adipisicing id nulla nisi
-                                        laboris ex in Lorem sunt duis officia
-                                        eiusmod. Aliqua reprehenderit commodo ex
-                                        non excepteur duis sunt velit enim.
-                                        Voluptate laboris sint cupidatat ullamco
-                                        ut ea consectetur et est culpa et culpa
-                                        duis.
-                                    </Typography>
+                                    <Accordion variant="outlined">
+                                        <AccordionSummary
+                                            expandIcon={<ExpandMore />}
+                                        >
+                                            <h3>Глоссарий</h3>
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            <Typography>
+                                                <ul>
+                                                    <li>
+                                                        <GlossaryItem
+                                                            word="Lorem"
+                                                            definition="Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat."
+                                                            timestamp={30}
+                                                        />
+                                                    </li>
+                                                </ul>
+                                            </Typography>
+                                        </AccordionDetails>
+                                    </Accordion>
                                 </AccordionDetails>
                             </Accordion>
                         );
