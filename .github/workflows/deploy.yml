@@ -25,16 +25,19 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: webfactory/ssh-agent@v0.8.0
-      with:
-        ssh-private-key: ${{ secrets.DEPLOY_KEY }}
-    - name: Qwe
-      run: ssh root@demo.dungeon-massters.pro ls -la
     - name: Replace passwords
       run: sed -i -e "s/PG_PASS/${{ secrets.DATABASE_PASSWORD }}/" deploy-docker-compose.yml
-    - name: Deploy Docker compose
-      env:
-        DOCKER_HOST: ${{ secrets.DOCKER_HOST }}
-      run: docker compose --project-name massistant-demo --file deploy-docker-compose.yml up --build -d
-
+    - name: Setup env
+      run: cp massistant-web-app/.env.production.deploy massistant-web-app/.env.production
+    - name: Deploy
+      uses: easingthemes/ssh-deploy@main
+      with:
+        SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
+        ARGS: "-rltgoDzvO --delete"
+        SOURCE: "./"
+        EXCLUDE: "dataset/"
+        REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
+        REMOTE_USER: ${{ secrets.DEPLOY_USER }}
+        TARGET: ${{ secrets.DEPLOY_TARGET }}
+        SCRIPT_AFTER: cd ${{ secrets.DEPLOY_TARGET }} && docker-compose --project-name massistant-demo --file deploy-docker-compose.yml up --build -d
 
