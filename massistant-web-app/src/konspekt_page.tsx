@@ -27,13 +27,15 @@ import {
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import axios from "axios";
-import { useRef, useState } from "react";
+import { createRef, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import { apiUrl } from "./utils/api";
 import moment from "moment";
+import { PlayCircle } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { KonspektPlayer } from "./konspekt_player";
 import './konspekt-page.css';
+import H5AudioPlayer from "react-h5-audio-player";
 
 const uploadKonspekt = (audio: File) => {
     const url = apiUrl + "/konspekt";
@@ -80,7 +82,8 @@ const GlossaryItem = ({
 };
 
 export const KonspektPage = (props) => {
-    const [audio, setAudio] = useState<File | null>(null);
+    const [audioName, setAudio] = useState<string>('');
+    const [audioId, setAudioId] = useState<number | null>(null);
     const [uploadState, setUploadState] = useState("");
     const scrollTarget = useRef<HTMLDivElement | null>(null);
 
@@ -99,6 +102,16 @@ export const KonspektPage = (props) => {
             .delete(`${apiUrl}/konspekt/${id}`)
             .then(() => getKonspektsQuery.refetch());
     };
+
+
+    const player = createRef<H5AudioPlayer>();
+
+    const handlePlayClick = (id: any, filename: string) => {
+        if (id != audioId) {
+            setAudioId(id);
+            setAudio(filename);
+        }
+    }
 
     return (
         <>
@@ -128,23 +141,33 @@ export const KonspektPage = (props) => {
                                                 justifyContent: 'space-between',
                                                 alignItems: 'center'
                                             }}>
-                                                <Typography variant="h6"><span>{item.original_filename}</span></Typography>
+                                                <div style={{ display: 'flex', alignItems: 'center', maxWidth: '25em' }}>
+                                                    <Typography variant="h6" noWrap>
+                                                        {item.original_filename}
+                                                    </Typography>
+                                                    <IconButton
+                                                        sx={{
+                                                            ml: 1
+                                                        }}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handlePlayClick(item.id, item.filename);
+                                                        }}>
+                                                        <PlayCircle />
+                                                    </IconButton>
+                                                </div>
                                                 <span style={{
                                                     fontSize: '1em',
                                                     color: '#8d46f4',
                                                     opacity: 0.75,
                                                 }}>{moment(item.created_at).calendar()}</span>
                                             </div>
-                                            <IconButton onClick={() =>
-                                                            handleDelete(item.id)
-                                                        }>
+                                            <IconButton
+                                                onClick={() =>
+                                                    handleDelete(item.id)
+                                                }>
                                                 <DeleteIcon />
                                             </IconButton>
-                                        </div>
-                                        <div className="player-container">
-                                            <KonspektPlayer
-                                                filename={item.filename}
-                                            ></KonspektPlayer>
                                         </div>
                                     </div>
                                 </AccordionSummary>
@@ -207,14 +230,23 @@ export const KonspektPage = (props) => {
                     <div ref={scrollTarget}></div>
                 </Stack>
             )}
-
+            {audioId != null && <div style={{
+                height: '4em',
+            }}></div>}
+            <div style={{ display: audioId === null ? 'none' : 'block' }}
+                className="player-container">
+                <KonspektPlayer
+                    filename={audioName}
+                    playerRef={player}
+                ></KonspektPlayer>
+            </div>
             <LoadingButton
                 variant="contained"
                 component="label"
                 sx={{
                     position: "fixed",
                     right: 32,
-                    bottom: 32,
+                    bottom: audioId === null ? 32 : 120,
                     padding: 2
                 }}
                 loading={uploadState === "uploading"}
