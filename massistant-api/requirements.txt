@@ -9,6 +9,7 @@ click==8.1.7
 click-didyoumean==0.3.0
 click-plugins==1.1.1
 click-repl==0.3.0
+docx==0.2.4
 fastapi==0.104.1
 greenlet==3.0.1
 h11==0.14.0

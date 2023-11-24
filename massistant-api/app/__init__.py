@@ -23,6 +23,8 @@ from app.request_models import UploadTranscribedText
 
 from app.tasks import send_transcribe_task, celeryFeedback
 
+import docx
+
 import tempfile
 
 app = FastAPI()
@@ -204,22 +206,19 @@ def download_konspekt(kid: int, db: Session = Depends(get_db)):
             error_key="download.invalid_konspekt_id"
         )
 
-    # TODO: PDF или DOCX
-    fake_document = f"# {konspekt_upload.original_filename}\n"\
-        + "\n"\
-        + "## Транскрибация\n"\
-        + "\n"\
-        + f"{konspekt_upload.transcribe}\n"\
-        + "\n"\
-        + "## Глоссарий\n"\
-        + "\n"\
-        + "- lorem\n"\
-        + "- ipsum\n"\
-        + "- dolor\n"
+
+    document = docx.Document()
+    document.add_heading(konspekt_upload.original_filename, 0)
+    document.add_paragraph("## Транскрибация\n", style='Heading 1')
+    document.add_paragraph("None" if konspekt_upload.transcribe is None else konspekt_upload.transcribe)
+    document.add_paragraph("## Глоссарий\n", style='Heading 1')
+    document.add_paragraph("- lorem\n"\
+                            + "- ipsum\n"\
+                            + "- dolor\n")
 
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
-        tmp.write(fake_document.encode())
-        return FileResponse(tmp.name, media_type='text/plain')
+        document.save(tmp.name)
+        return FileResponse(tmp.name, media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
 
 
 @app.delete("/api/konspekt/{kid}")
