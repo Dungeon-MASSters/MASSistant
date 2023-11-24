@@ -1,5 +1,7 @@
 # MASSistant
 
+[![Deploy](https://github.com/Dungeon-MASSters/MASSistant/actions/workflows/deploy.yml/badge.svg)](https://github.com/Dungeon-MASSters/MASSistant/actions/workflows/deploy.yml)
+
 ## Локальное докер окружение
 
 ```bash
