@@ -2,6 +2,7 @@ import mimetypes
 import os
 import uuid
 from typing import Annotated, Union
+import base64
 
 import aiofiles
 from fastapi import Depends, FastAPI, File, UploadFile, status
@@ -10,12 +11,16 @@ from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.queries import create_konspekt_upload, get_konspekts
+from app.queries import create_konspekt_upload, get_konspekt_by_id, get_konspekts
 from app.response_models import (
     DefaultErrorResponse,
     KonspektsListItem,
     KonspektUploadSuccessResponse,
+    TranscribeUploadSuccessResponse,
 )
+from app.request_models import UploadTranscribedText
+
+from app.tasks import send_transcribe_task
 
 app = FastAPI()
 
@@ -100,6 +105,8 @@ async def upload_konspekt(audio: UploadFile, db: Session = Depends(get_db)) -> U
     )
     print(new_upload.id)
 
+    send_transcribe_task(new_upload.id, filename)
+
     return KonspektUploadSuccessResponse(
         msg="Конспект загружен",
         key="upload.success",
@@ -143,3 +150,26 @@ def get_konspekt_file(filename: str):
 
     headers = {'Content-Disposition': f'attachment; filename="{filename}"'}
     return StreamingResponse(iterfile(), headers=headers, media_type=ext[0])
+
+
+@app.post("/api/konspekts/{kid}/transcribed")
+def set_konspket_transcribed_text(kid: int, transcribed: UploadTranscribedText, db: Session = Depends(get_db)):
+    print("Got transcribed text for id =", kid)
+
+    konspekt_upload = get_konspekt_by_id(db, kid)
+
+    if konspekt_upload is None:
+        return DefaultErrorResponse(
+            error_msg="Неверный ID конспекта",
+            error_key="transcribe_upload.invalid_konspekt_id"
+        )
+
+    text = base64.b64decode(transcribed.data).decode("utf8")
+    konspekt_upload.transcribe = text
+    konspekt_upload.status = "transcribed"
+    db.commit()
+
+    return TranscribeUploadSuccessResponse(
+        msg="Транскрибированный текст сохранен в базу данных",
+        key="transcribe_upload.success"
+    )

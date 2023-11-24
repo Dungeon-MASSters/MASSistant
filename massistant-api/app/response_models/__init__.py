@@ -14,6 +14,11 @@ class KonspektUploadSuccessResponse(BaseModel):
     filename: str
 
 
+class TranscribeUploadSuccessResponse(BaseModel):
+    msg: str
+    key: str
+
+
 class KonspektsListItem(BaseModel):
     id: int
     created_at: datetime
