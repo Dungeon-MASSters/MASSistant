@@ -19,7 +19,7 @@ import {
     styled,
     CardMedia,
     Toolbar,
-    LinearProgress
+    LinearProgress, IconButton
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import axios from "axios";
@@ -28,6 +28,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 import { apiUrl } from "./utils/api";
 import moment from "moment";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const uploadKonspekt = (audio: File) => {
     const url = apiUrl + "/konspekt";
@@ -95,7 +96,12 @@ export const KonspektPage = () => {
                             <Accordion>
                                 <AccordionSummary expandIcon={<ExpandMore />}>
                                     <Typography>
+                                        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                                         <h2>{item.original_filename}</h2>
+                                            <IconButton aria-label="delete">
+                                            <DeleteIcon />
+                                        </IconButton>
+                                        </div>
                                         <span>
                                             {moment(item.created_at).calendar()}
                                         </span>
