@@ -66,6 +66,10 @@ const getTime = (timestamp: number): string => {
   return time.substring(3, 8);
 };
 
+const handleTimeCode = (timestamp) => {
+        alert(timestamp)
+    };
+
 
 const GlossaryItem = ({
     word,
@@ -81,7 +85,7 @@ const GlossaryItem = ({
             <span>
                 {word} - {definition}
             </span>
-            <span>{getTime(timestamp)}</span>
+            <Link  variant="button" onClick={() => handleTimeCode(timestamp)} >{getTime(timestamp)}</Link>
         </Stack>
     );
 };
