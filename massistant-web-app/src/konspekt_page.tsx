@@ -1,15 +1,20 @@
 import { AudioFileRounded, UploadFileRounded, Save } from "@mui/icons-material";
-import { Box, Button, FormControl, Input, Stack } from "@mui/material";
+import {
+    Box,
+    Button,
+    CircularProgress,
+    FormControl,
+    Input,
+    Paper,
+    Stack,
+    styled
+} from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import axios from "axios";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 import { apiUrl } from "./utils/api";
-
-type konspektInputs = {
-    audio: FileList;
-};
 
 const uploadKonspekt = (audio: File) => {
     const url = apiUrl + "/konspekt";
@@ -24,76 +29,87 @@ const uploadKonspekt = (audio: File) => {
     });
 };
 
-export const KonspektPage = () => {
-    const {
-        register,
-        handleSubmit,
-        watch,
-        formState: { errors },
-        getValues
-    } = useForm<konspektInputs>();
+const getKonspektsList = () => {
+    const url = apiUrl + "/konspekt";
+    return axios.get(url).then((resp) => resp.data);
+};
 
-    const submitKonspektQuery = useQuery(
-        ["upload-konspekt"],
-        () => {
-            let files = getValues().audio;
-            uploadKonspekt(files[0]);
-        },
-        {
-            enabled: false,
-            onSuccess: (data) => {
-                alert("ok");
-            },
-            onError: (data) => {
-                alert("error");
-            }
-        }
+const KonspektCard = styled(Paper)(({ theme }) => ({
+    height: 200,
+    padding: theme.spacing(2),
+    ...theme.typography.body2
+}));
+
+export const KonspektPage = () => {
+    const [audio, setAudio] = useState<File | null>(null);
+    const [uploadState, setUploadState] = useState("");
+    const scrollTarget = useRef<HTMLDivElement | null>(null);
+
+    const getKonspektsQuery = useQuery(
+        ["get-konspekts"],
+        () => getKonspektsList(),
+        {}
     );
 
-    const onKonspektFormSubmit: SubmitHandler<konspektInputs> = (_) => {
-        submitKonspektQuery.refetch();
-    };
+    console.log(uploadState);
 
     return (
         <>
-            <div>this is a konspekt page</div>
+            {getKonspektsQuery.isLoading ? (
+                <CircularProgress />
+            ) : (
+                <Stack spacing={2}>
+                    {getKonspektsQuery.data.map((query: any) => {
+                        return (
+                            <KonspektCard variant="outlined" key={query.id}>
+                                {query.original_filename}
+                            </KonspektCard>
+                        );
+                    })}
 
-            <form onSubmit={() => false}>
-                <Stack spacing={1} sx={{ width: 400 }}>
-                    <Button variant="outlined" component="label">
-                        <Box sx={{ display: "flex", gap: "0.25rem" }}>
-                            <AudioFileRounded />
-                            <span>Запись лекции</span>
-                        </Box>
-                        <input
-                            id="audio-file"
-                            type="file"
-                            hidden
-                            accept="audio/*"
-                            {...register("audio", { required: true })}
-                        />
-                    </Button>
-                    {submitKonspektQuery.isFetching ? (
-                        <LoadingButton
-                            loading
-                            loadingPosition="start"
-                            startIcon={<Save />}
-                            variant="outlined"
-                        >
-                            Загрузка...
-                        </LoadingButton>
-                    ) : (
-                        <Button
-                            variant="contained"
-                            type="submit"
-                            onClick={handleSubmit(onKonspektFormSubmit)}
-                        >
-                            <UploadFileRounded />
-                            <span>Загрузить</span>
-                        </Button>
-                    )}
+                    <div ref={scrollTarget}></div>
                 </Stack>
-            </form>
+            )}
+
+            <LoadingButton
+                variant="contained"
+                component="label"
+                sx={{
+                    position: "fixed",
+                    right: 32,
+                    bottom: 32,
+                    padding: 2
+                }}
+                loading={uploadState === "uploading"}
+                startIcon={<AudioFileRounded />}
+            >
+                <span>Загрузить запись лекции</span>
+
+                <input
+                    id="audio-file"
+                    type="file"
+                    hidden
+                    accept="audio/*"
+                    onChange={async (e) => {
+                        setUploadState("uploading");
+
+                        try {
+                            let res = await uploadKonspekt(e.target.files[0]);
+                            console.log(res);
+                            setUploadState("done");
+                            getKonspektsQuery.refetch().then(() => {
+                                scrollTarget.current?.scrollIntoView({
+                                    behavior: "smooth",
+                                    block: "end"
+                                });
+                            });
+                        } catch (e) {
+                            console.error(e);
+                            setUploadState("error");
+                        }
+                    }}
+                />
+            </LoadingButton>
         </>
     );
 };
