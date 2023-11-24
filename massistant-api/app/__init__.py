@@ -1,18 +1,21 @@
+import mimetypes
+import os
+import uuid
 from typing import Annotated, Union
+
+import aiofiles
 from fastapi import Depends, FastAPI, File, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
-
-import aiofiles
-import os
-import mimetypes
-import uuid
-
 from sqlalchemy.orm import Session
-from app.queries import create_konspekt_upload
-from app.database import get_db
 
-from app.response_models import DefaultErrorResponse, KonspektUploadSuccessResponse
+from app.database import get_db
+from app.queries import create_konspekt_upload, get_konspekts
+from app.response_models import (
+    DefaultErrorResponse,
+    KonspektsListItem,
+    KonspektUploadSuccessResponse,
+)
 
 app = FastAPI()
 
@@ -65,7 +68,7 @@ def read_item(item_id: int, q: Union[str, None] = None):
 
 @app.post("/api/konspekt")
 async def upload_konspekt(audio: UploadFile, db: Session = Depends(get_db)) -> Union[
-    KonspektUploadSuccessResponse, DefaultErrorResponse]:
+        KonspektUploadSuccessResponse, DefaultErrorResponse]:
     filename = audio.filename
     og_filename = audio.filename
     mime = audio.content_type
@@ -106,6 +109,21 @@ async def upload_konspekt(audio: UploadFile, db: Session = Depends(get_db)) -> U
 
 # TODO: тут ещё будут роуты для транскрибации и тп, но пока хз как они выглядят
 
+@app.get("/api/konspekt")
+async def get_all_konspekts(db: Session = Depends(get_db)) -> list[KonspektsListItem]:
+    konspekts: list[KonspektsListItem] = []
+
+    for k in get_konspekts(db):
+        konspekts.append(KonspektsListItem(
+            id=k.id,
+            created_at=k.created_at,
+            original_filename=k.original_filename,
+            filename=k.filename,
+            status=k.status
+        ))
+
+    return konspekts
+
 
 @app.get("/api/konspekt/audio/{filename}")
 def get_konspekt_file(filename: str):
@@ -117,6 +135,7 @@ def get_konspekt_file(filename: str):
         )
 
     ext = mimetypes.guess_type(filepath)
+
     def iterfile():
         with open(filepath, "rb") as f:
             yield from f

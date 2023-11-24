@@ -1,4 +1,5 @@
 from datetime import datetime
+from pydantic import BaseModel
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 

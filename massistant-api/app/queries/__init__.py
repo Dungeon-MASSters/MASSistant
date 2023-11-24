@@ -15,3 +15,6 @@ def create_konspekt_upload(db: Session, orignal_filename: Union[str, None], file
     db.refresh(new_upload)
     return new_upload
 
+
+def get_konspekts(db: Session) -> list[KonspektUpload]:
+    return db.query(KonspektUpload).all()

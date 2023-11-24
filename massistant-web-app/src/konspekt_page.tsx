@@ -51,8 +51,6 @@ export const KonspektPage = () => {
         {}
     );
 
-    console.log(uploadState);
-
     return (
         <>
             {getKonspektsQuery.isLoading ? (
@@ -62,7 +60,7 @@ export const KonspektPage = () => {
                     {getKonspektsQuery.data.map((query: any) => {
                         return (
                             <KonspektCard variant="outlined" key={query.id}>
-                                {query.original_filename}
+                                <span>{query.original_filename}</span>
                             </KonspektCard>
                         );
                     })}

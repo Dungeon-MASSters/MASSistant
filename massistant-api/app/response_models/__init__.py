@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel
 
 
@@ -10,3 +11,11 @@ class KonspektUploadSuccessResponse(BaseModel):
     msg: str
     key: str
     filename: str
+
+
+class KonspektsListItem(BaseModel):
+    id: int
+    created_at: datetime
+    original_filename: str
+    filename: str
+    status: str
