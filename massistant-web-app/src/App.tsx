@@ -43,6 +43,18 @@ function App() {
 
     const drawerWidth = 360;
     const theme = useTheme();
+
+    const menuItems = [
+        {
+            title: "Главная",
+            route: "/"
+        },
+        {
+            title: "Конспект",
+            route: "/konspekt"
+        }
+    ];
+
     return (
         <Box sx={{ display: "flex" }}>
             <CssBaseline />
@@ -76,14 +88,10 @@ function App() {
                 <Toolbar />
                 <Box sx={{ overflow: "auto" }}>
                     <List>
-                        {["main", "konspect"].map((text, index) => (
-                            <ListItem key={text} disablePadding>
+                        {menuItems.map((item, index) => (
+                            <ListItem key={index} disablePadding>
                                 <ListItemButton
-                                    onClick={() =>
-                                        navigate(
-                                            index % 2 === 0 ? "/" : "/konspekt"
-                                        )
-                                    }
+                                    onClick={() => navigate(item.route)}
                                 >
                                     <ListItemIcon>
                                         {index % 2 === 0 ? (
@@ -92,7 +100,7 @@ function App() {
                                             <MenuBookIcon />
                                         )}
                                     </ListItemIcon>
-                                    <ListItemText primary={text} />
+                                    <ListItemText primary={item.title} />
                                 </ListItemButton>
                             </ListItem>
                         ))}
