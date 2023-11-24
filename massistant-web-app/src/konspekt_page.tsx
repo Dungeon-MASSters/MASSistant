@@ -1,5 +1,13 @@
-import { AudioFileRounded, UploadFileRounded, Save } from "@mui/icons-material";
 import {
+    AudioFileRounded,
+    UploadFileRounded,
+    Save,
+    ExpandMore
+} from "@mui/icons-material";
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
     Box,
     Button,
     CircularProgress,
@@ -7,6 +15,7 @@ import {
     Input,
     Paper,
     Stack,
+    Typography,
     styled
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
@@ -36,7 +45,7 @@ const getKonspektsList = () => {
 };
 
 const KonspektCard = styled(Paper)(({ theme }) => ({
-    height: 200,
+    // height: 200,
     // width: "80%",
     padding: theme.spacing(2),
     ...theme.typography.body2
@@ -58,32 +67,66 @@ export const KonspektPage = () => {
             {getKonspektsQuery.isLoading ? (
                 <CircularProgress />
             ) : (
-                <Stack spacing={2}>
+                <Stack>
                     {getKonspektsQuery.data.map((item: any) => {
                         return (
-                            <KonspektCard variant="outlined" key={item.id}>
-                                <Stack
-                                    direction="column"
-                                    justifyContent="space-between"
+                            <Accordion>
+                                <AccordionSummary
+                                    expandIcon={<ExpandMore />}
+                                    aria-controls="panel1a-content"
+                                    id="panel1a-header"
                                 >
-                                    {/* FUCK */}
-                                    <Stack
-                                        direction="row"
-                                        justifyContent="space-between"
-                                        alignItems="center"
-                                    >
-                                        <span>{item.original_filename}</span>
+                                    <Typography>
+                                        <h2>{item.original_filename}</h2>
                                         <span>
                                             {moment(item.created_at).calendar()}
                                         </span>
-                                    </Stack>
-                                    <audio
-                                        controls
-                                        src={`${apiUrl}/konspekt/audio/${item.filename}`}
-                                        preload="none"
-                                    />
-                                </Stack>
-                            </KonspektCard>
+                                    </Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <Typography>
+                                        Lorem ipsum dolor sit amet, officia
+                                        excepteur ex fugiat reprehenderit enim
+                                        labore culpa sint ad nisi Lorem pariatur
+                                        mollit ex esse exercitation amet. Nisi
+                                        anim cupidatat excepteur officia.
+                                        Reprehenderit nostrud nostrud ipsum
+                                        Lorem est aliquip amet voluptate
+                                        voluptate dolor minim nulla est
+                                        proident. Nostrud officia pariatur ut
+                                        officia. Sit irure elit esse ea nulla
+                                        sunt ex occaecat reprehenderit commodo
+                                        officia dolor Lorem duis laboris
+                                        cupidatat officia voluptate. Culpa
+                                        proident adipisicing id nulla nisi
+                                        laboris ex in Lorem sunt duis officia
+                                        eiusmod. Aliqua reprehenderit commodo ex
+                                        non excepteur duis sunt velit enim.
+                                        Voluptate laboris sint cupidatat ullamco
+                                        ut ea consectetur et est culpa et culpa
+                                        duis. Lorem ipsum dolor sit amet,
+                                        officia excepteur ex fugiat
+                                        reprehenderit enim labore culpa sint ad
+                                        nisi Lorem pariatur mollit ex esse
+                                        exercitation amet. Nisi anim cupidatat
+                                        excepteur officia. Reprehenderit nostrud
+                                        nostrud ipsum Lorem est aliquip amet
+                                        voluptate voluptate dolor minim nulla
+                                        est proident. Nostrud officia pariatur
+                                        ut officia. Sit irure elit esse ea nulla
+                                        sunt ex occaecat reprehenderit commodo
+                                        officia dolor Lorem duis laboris
+                                        cupidatat officia voluptate. Culpa
+                                        proident adipisicing id nulla nisi
+                                        laboris ex in Lorem sunt duis officia
+                                        eiusmod. Aliqua reprehenderit commodo ex
+                                        non excepteur duis sunt velit enim.
+                                        Voluptate laboris sint cupidatat ullamco
+                                        ut ea consectetur et est culpa et culpa
+                                        duis.
+                                    </Typography>
+                                </AccordionDetails>
+                            </Accordion>
                         );
                     })}
 
