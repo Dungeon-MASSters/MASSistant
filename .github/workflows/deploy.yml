@@ -25,6 +25,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - uses: webfactory/ssh-agent@v0.8.0
+      with:
+        ssh-private-key: ${{ secrets.DEPLOY_KEY }}
     - name: Qwe
       run: ssh root@demo.dungeon-massters.pro ls -la
     - name: Replace passwords
