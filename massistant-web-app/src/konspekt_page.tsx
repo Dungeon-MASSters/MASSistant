@@ -107,7 +107,7 @@ export const KonspektPage = (props) => {
                 <Stack>
                     {getKonspektsQuery.data.map((item: any, index) => {
                         return (
-                            <Accordion>
+                            <Accordion key={item.id}>
                                 <AccordionSummary expandIcon={<ExpandMore />}>
                                     <Stack sx={{ width: "100%" }} spacing={1}>
                                         <Typography>
