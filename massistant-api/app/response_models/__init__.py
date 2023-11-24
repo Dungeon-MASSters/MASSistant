@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Union
 from pydantic import BaseModel
 
 
@@ -19,3 +20,4 @@ class KonspektsListItem(BaseModel):
     original_filename: str
     filename: str
     status: str
+    trans_text: Union[str, None]

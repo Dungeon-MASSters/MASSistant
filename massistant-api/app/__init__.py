@@ -119,7 +119,8 @@ async def get_all_konspekts(db: Session = Depends(get_db)) -> list[KonspektsList
             created_at=k.created_at,
             original_filename=k.original_filename,
             filename=k.filename,
-            status=k.status
+            status=k.status,
+            trans_text=k.transcribe
         ))
 
     return konspekts
