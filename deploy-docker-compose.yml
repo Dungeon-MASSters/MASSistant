@@ -26,7 +26,7 @@ services:
       context: massistant-web-app
     restart: always
     ports:
-      - 8000:8080
+      - 18000:8080
     command: [ "npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "8080" ]
 
   api:
@@ -34,7 +34,7 @@ services:
       context: massistant-api
     restart: always
     ports:
-      - 8080:8080
+      - 18080:8080
     environment:
       POSTGRES_URL: "postgresql://postgres:PG_PASS@db:5432/app"
     volumes:

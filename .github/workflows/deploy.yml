@@ -1,0 +1,31 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build Docker compose
+      run: docker compose --file deploy-docker-compose.yml build
+
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup keys
+      run: mkdir -p ~/.ssh && echo $DEPLOY_KEY > ~/.ssh/id_ed25519
+    - uses: actions/checkout@v3
+    - name: Deploy Docker compose
+      run: docker compose --project-name massistant-demo --file deploy-docker-compose.yml up --build
+
+
