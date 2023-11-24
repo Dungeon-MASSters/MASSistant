@@ -77,7 +77,7 @@ def read_item(item_id: int, q: Union[str, None] = None):
 
 
 @app.post("/api/konspekt")
-async def upload_konspekt(audio: UploadFile, db: Session = Depends(get_db)) -> Union[
+async def upload_konspekt(mode: Union[None, str], audio: UploadFile, db: Session = Depends(get_db)) -> Union[
         KonspektUploadSuccessResponse, DefaultErrorResponse]:
     filename = audio.filename
     og_filename = audio.filename
@@ -110,7 +110,10 @@ async def upload_konspekt(audio: UploadFile, db: Session = Depends(get_db)) -> U
     )
     print(new_upload.id)
 
-    send_transcribe_task(new_upload.id, filename)
+    if mode != "fast" and mode != "precise":
+        mode = "fast"
+
+    send_transcribe_task(new_upload.id, filename, mode)
 
     return KonspektUploadSuccessResponse(
         msg="Конспект загружен",
