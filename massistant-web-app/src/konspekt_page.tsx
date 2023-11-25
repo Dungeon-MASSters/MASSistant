@@ -175,7 +175,9 @@ export const KonspektPage = (props) => {
     const getKonspektsQuery = useQuery(
         ["get-konspekts"],
         () => getKonspektsList(),
-        {}
+        {
+            refetchInterval(5)
+        }
     );
 
     // const handleDownload = (id) => {
