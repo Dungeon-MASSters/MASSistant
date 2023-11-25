@@ -19,7 +19,7 @@ from app.response_models import (
     KonspektUploadSuccessResponse,
     TranscribeUploadSuccessResponse,
 )
-from app.request_models import UploadTranscribedText
+from app.request_models import UploadExtractedSummary, UploadExtractedTerms, UploadTranscribedText
 
 from app.tasks import send_transcribe_task, celeryFeedback
 
@@ -198,6 +198,50 @@ def set_konspket_transcribed_text(kid: int, transcribed: UploadTranscribedText, 
     return TranscribeUploadSuccessResponse(
         msg="Транскрибированный текст сохранен в базу данных",
         key="transcribe_upload.success"
+    )
+
+
+@app.post("/api/konspekt/{kid}/terms")
+def set_konspket_extracted_terms(kid: int, terms: UploadExtractedTerms, db: Session = Depends(get_db)):
+    print("Got terms text for id =", kid)
+
+    konspekt_upload = get_konspekt_by_id(db, kid)
+
+    if konspekt_upload is None:
+        return DefaultErrorResponse(
+            error_msg="Неверный ID конспекта",
+            error_key="terms.invalid_konspekt_id"
+        )
+
+    konspekt_upload.glossary = {
+        'terms': terms.data  # 🤡
+    }
+    db.commit()
+
+    return TranscribeUploadSuccessResponse(
+        msg="Термины сохранены в базу данных",
+        key="terms.success"
+    )
+
+
+@app.post("/api/konspekt/{kid}/summary")
+def set_konspket_extracted_summary(kid: int, summary: UploadExtractedSummary, db: Session = Depends(get_db)):
+    print("Got terms text for id =", kid)
+
+    konspekt_upload = get_konspekt_by_id(db, kid)
+
+    if konspekt_upload is None:
+        return DefaultErrorResponse(
+            error_msg="Неверный ID конспекта",
+            error_key="summary.invalid_konspekt_id"
+        )
+
+    konspekt_upload.summary = summary.data
+    db.commit()
+
+    return TranscribeUploadSuccessResponse(
+        msg="Суммаризация сохранена в базу данных",
+        key="summary.success"
     )
 
 
