@@ -72,6 +72,20 @@ export const HelpPage = () => {
           aria-controls="panel2a-content"
           id="panel2a-header"
         >
+          <Typography>Редактирование</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+              Чтобы отредактировать контент нажмите на кнопку «карандаш» рядом с текстом. После изменений нажмите на кнопку «сохранить».
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+        <Accordion style={{margin:"10px 0 0 0"}}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel2a-content"
+          id="panel2a-header"
+        >
           <Typography>Воспроизведение аудио</Typography>
         </AccordionSummary>
         <AccordionDetails>
