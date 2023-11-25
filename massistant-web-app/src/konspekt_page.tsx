@@ -440,7 +440,7 @@ export const KonspektPage = (props) => {
                                                         }
                                                     </p>
 
-                                                    <h3>Основаная часть</h3>
+                                                    <h3>Основная часть</h3>
                                                     <p>
                                                         {
                                                             item.summary[
