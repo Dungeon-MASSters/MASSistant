@@ -3,6 +3,7 @@ import os
 import requests
 import base64
 from multiprocessing import Process, Manager
+from summary import GenerateSum
 
 api_server = os.getenv("API_SERVER")
 if api_server is None:
@@ -39,13 +40,20 @@ app = Celery(
     broker='pyamqp://app:dungeon@rabbit.dungeon-massters.pro:5672/'
 )
 
+summary = GenerateSum()
+analyzer = SyntaxAnalyzer()
+
 @app.task
 def do_extract_summary_stuff(id, filename, mode: str):
 
-    data = get_file_from_server(filename)  # если что файл кешируется в /tmp с прошлого этапа, но если он почему-то удален, то он скачается заново
+    data = get_data(filename)  # если что файл кешируется в /tmp с прошлого этапа, но если он почему-то удален, то он скачается заново
     print(filename, data)
+
+    doc = analyzer(data)
+
+    sentences = analyzer.get_sentences(doc, normalize=False, upos=[])
     
-    extracted_summary: dict = extract_summary_func_or_smth(data)
+    extracted_summary: dict = summary(sentences)
     print(extracted_summary)
 
     print(f'finished job: {filename}')
