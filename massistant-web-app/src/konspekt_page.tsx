@@ -71,7 +71,7 @@ const uploadKonspekt = (audio: File, mode: string) => {
 };
 
 const editText = (id: number, newValue: string) => {
-    const url = `/api/konspekt/${id}/text`;
+    const url = `${apiUrl}/konspekt/${id}/text`;
     return axios.post(url, { text: newValue });
 }
 
@@ -216,6 +216,8 @@ export const KonspektPage = (props) => {
             if (editItemID && editItemText) {
                 let res = await editText(editItemID, editItemText);
                 console.log(res);
+                setEditItemID(undefined)
+                setEditItemText(undefined)
                 getKonspektsQuery.refetch().then(() => {
                     scrollTarget.current?.scrollIntoView({
                         behavior: "smooth",
@@ -373,7 +375,7 @@ export const KonspektPage = (props) => {
                                                         />
                                                     ) : (
                                                         <Box sx={{ maxHeight: "18em", overflowY: 'auto'}}>
-                                                            <p>{item.trans_text}</p>
+                                                            <p style={{whiteSpace: "pre"}}>{item.trans_text}</p>
                                                         </Box>
                                                     )
                                                 ) : (
