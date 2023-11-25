@@ -9,14 +9,14 @@ from transformers import AutoTokenizer, AutoModelForTokenClassification, Trainer
 
 MODEL = 'bert-base-multilingual-cased'
 
-DATA = 'bio.csv'
+DATA = 'data/bio.csv'
 BATCH_SIZE = 6
 
 dataset = load_dataset('csv', data_files=DATA)
 label_list = np.unique([item for sublist in dataset['train']['ner_tags'] for item in ast.literal_eval(sublist)])
 
 tokenizer = AutoTokenizer.from_pretrained('bert-base-multilingual-uncased', add_prefix_space=True)
-model = AutoModelForTokenClassification.from_pretrained('/home/prof_evaluation/MASSistant/massistant-ai/research/bert-base-multilingual-uncased-finetuned_v2/checkpoint-600', num_labels=len(label_list)).to('cuda:0')
+model = AutoModelForTokenClassification.from_pretrained('/home/prof_evaluation/MASSistant/massistant-ai/prod/bert-base-v3', num_labels=len(label_list)).to('cuda:0')
 
 def extract_keywords_model(data, batch_size):
     keywords = []
@@ -43,7 +43,8 @@ def extract_keywords_model(data, batch_size):
                     print(keywords_item)
                     indices_single = []
             keywords.append(keywords_item)
-    return keywords
+
+    return list(set(keywords))
 
 data = ''
 with open('data/text.txt', mode='r', encoding='utf-8') as f:
@@ -53,3 +54,7 @@ data = [data]
 #data = ['Куку']
 keywords = extract_keywords_model(data, 1)
 print(keywords)
+
+import re
+terms = [re.sub(r'ыи\b', 'ый', key) for key in keywords[0]]
+print(terms)

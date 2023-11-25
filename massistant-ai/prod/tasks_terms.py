@@ -3,6 +3,9 @@ import os
 import requests
 import base64
 from multiprocessing import Process, Manager
+from keywords import Keywords
+from term_extraction import TermExtraction
+from syntax_analyzer import SyntaxAnalyzer
 
 api_server = os.getenv("API_SERVER")
 if api_server is None:
@@ -39,15 +42,18 @@ app = Celery(
     broker='pyamqp://app:dungeon@rabbit.dungeon-massters.pro:5672/'
 )
 
-@app.task
-def do_extract_terms_stuff(id, filename, mode: str):
+sa = SyntaxAnalyzer()
+kw = Keywords(sa)
+te = TermExtraction(sa)
 
-    data = get_file_from_server(filename)  # если что файл кешируется в /tmp с прошлого этапа, но если он почему-то удален, то он скачается заново
-    print(filename, data)
-    
-    extracted_terms: list[dict[str, str]] = extract_terms_func_or_smth(data)
+@app.task
+def do_extract_terms_stuff(id, text: str):
+
+    keys = kw.get_keywords(text, 1)
+    extracted_terms = te.get_term_meanings(text, keys)
+    # extracted_terms: list[dict[str, str]] = extract_terms_func_or_smth(data)
     print(extracted_terms)
 
-    print(f'finished job: {filename}')
+    print(f'finished job - term extraction')
 
     send_to_api_server(id, extracted_terms)  # тоже я

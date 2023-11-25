@@ -51,7 +51,7 @@ def do_trans_stuff(id, filename, mode: str):
     data = get_file_from_server(filename)  # - это напишу я
     print(filename, data)
     
-    transcribed_text = transcribe(data)  # модель транскрибации
+    transcribed_text = transcribe(data, mode)  # модель транскрибации
     print(transcribed_text['text'])
     text = transcribed_text['text']
 
