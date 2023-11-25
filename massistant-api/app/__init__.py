@@ -19,7 +19,7 @@ from app.response_models import (
     KonspektUploadSuccessResponse,
     TranscribeUploadSuccessResponse,
 )
-from app.request_models import UploadExtractedSummary, UploadExtractedTerms, UploadTranscribedText
+from app.request_models import UpdateKonspektText, UploadExtractedSummary, UploadExtractedTerms, UploadTranscribedText
 
 from app.tasks import send_summary_task, send_terms_task, send_transcribe_task, celeryFeedback
 
@@ -78,7 +78,7 @@ def read_item(item_id: int, q: Union[str, None] = None):
 
 @app.post("/api/konspekt")
 async def upload_konspekt(mode: Union[None, str], audio: UploadFile, db: Session = Depends(get_db)) -> Union[
-        KonspektUploadSuccessResponse, DefaultErrorResponse]:
+    KonspektUploadSuccessResponse, DefaultErrorResponse]:
     filename = audio.filename
     og_filename = audio.filename
     mime = audio.content_type
@@ -160,6 +160,7 @@ def get_konspekt_file(filename: str):
 
     headers = {'Content-Disposition': f'attachment; filename="{filename}"'}
     return StreamingResponse(iterfile(), headers=headers, media_type=ext[0])
+
 
 # @celeryFeedback.task
 # def set_transcribed_text(konspekt_id: int, text: str):
@@ -261,16 +262,33 @@ def download_konspekt(kid: int, db: Session = Depends(get_db)):
     document = docx.Document()
     document.add_heading(konspekt_upload.original_filename, 0)
     document.add_paragraph("## Транскрибация\n", style='Heading 1')
-    document.add_paragraph(
-        "None" if konspekt_upload.transcribe is None else konspekt_upload.transcribe)
+    document.add_paragraph("None" if konspekt_upload.transcribe is None else konspekt_upload.transcribe)
     document.add_paragraph("## Глоссарий\n", style='Heading 1')
-    document.add_paragraph("- lorem\n"
-                           + "- ipsum\n"
-                           + "- dolor\n")
+
+    if not konspekt_upload.glossary is None:
+        terms = konspekt_upload.glossary['terms']
+        for i in range(len(terms)):
+            document.add_paragraph(f"{terms[i]['term']} - {terms[i]['meaning']}")
+    else:
+        document.add_paragraph("None")
+    document.add_paragraph("## Краткое содержание\n", style='Heading 1')
+    if konspekt_upload.summary is None:
+        document.add_paragraph("None")
+    else:
+        document.add_paragraph("###Введение\n", style='Heading 2')
+        document.add_paragraph(
+            "None" if konspekt_upload.summary['introduction'] is None else konspekt_upload.summary['introduction'])
+        document.add_paragraph("###Основная часть\n", style='Heading 2')
+        document.add_paragraph(
+            "None" if konspekt_upload.summary['main_part'] is None else konspekt_upload.summary['main_part'])
+        document.add_paragraph("###Основная часть\n", style='Heading 2')
+        document.add_paragraph(
+            "None" if konspekt_upload.summary['conclusion'] is None else konspekt_upload.summary['conclusion'])
 
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         document.save(tmp.name)
-        return FileResponse(tmp.name, media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        return FileResponse(tmp.name,
+                            media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
 
 
 @app.delete("/api/konspekt/{kid}")
@@ -280,4 +298,23 @@ def delete_konspekt(kid: int, db: Session = Depends(get_db)):
     return TranscribeUploadSuccessResponse(
         msg="Конспект удален",
         key="delete.success"
+    )
+
+
+@app.post("/api/konspekt/{kid}/text")
+def update_konspekt_text(kid: int, data: UpdateKonspektText, db: Session = Depends(get_db)):
+    konspekt_upload = get_konspekt_by_id(db, kid)
+
+    if konspekt_upload is None:
+        return DefaultErrorResponse(
+            error_msg="Неверный ID конспекта",
+            error_key="update_text.invalid_konspekt_id"
+        )
+
+    konspekt_upload.transcribe = data.text
+    db.commit()
+
+    return TranscribeUploadSuccessResponse(
+        msg="Конспект обновлен",
+        key="update_text.success"
     )

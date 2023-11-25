@@ -44,8 +44,8 @@ import { useQuery } from "react-query";
 import { apiUrl } from "./utils/api";
 import moment from "moment";
 import { PlayCircle } from "@mui/icons-material";
-import AttachFileIcon from '@mui/icons-material/AttachFile';
-import CloseIcon from '@mui/icons-material/Close';
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from "@mui/icons-material/Delete";
 import { KonspektPlayer } from "./konspekt_player";
@@ -137,11 +137,11 @@ export const KonspektPage = (props) => {
 
     const [openDialog, setOpenDialog] = useState(false);
     const [file, changeFile] = useState<File | null | undefined>(null);
-    const [mode, changeMode] = useState('fast');
+    const [mode, changeMode] = useState("fast");
 
     const handleFileChange = (newValue: File | null) => {
         changeFile(newValue);
-    }
+    };
 
     const handleClickOpenDialog = () => {
         setOpenDialog(true);
@@ -153,7 +153,7 @@ export const KonspektPage = (props) => {
 
     const handleModeChange = (e: ChangeEvent, newValue: string) => {
         changeMode(newValue);
-    }
+    };
 
     const handleSubmit = async () => {
         handleCloseDialog();
@@ -178,12 +178,14 @@ export const KonspektPage = (props) => {
             console.error(e);
             setUploadState("error");
         }
-    }
+    };
 
     const getKonspektsQuery = useQuery(
         ["get-konspekts"],
         () => getKonspektsList(),
-        {}
+        {
+            refetchInterval: 5000
+        }
     );
 
     // const handleDownload = (id) => {
@@ -446,35 +448,39 @@ export const KonspektPage = (props) => {
                                         </AccordionSummary>
                                         <AccordionDetails>
                                             <Typography>
-                                                <ul>
-                                                    {item.glossary?.terms?.map(
-                                                        (term) => (
-                                                            <li>
-                                                                <GlossaryItem
-                                                                    word={
-                                                                        term.term ??
-                                                                        "???"
-                                                                    }
-                                                                    definition={
-                                                                        term.meaning ??
-                                                                        "???"
-                                                                    }
-                                                                    timestamp={
-                                                                        term.timestamp
-                                                                    }
-                                                                    audio={{
-                                                                        id: item.id,
-                                                                        filename:
-                                                                            item.filename
-                                                                    }}
-                                                                    handleTimeclick={
-                                                                        handleTimeclick
-                                                                    }
-                                                                />
-                                                            </li>
-                                                        )
-                                                    )}
-                                                </ul>
+                                                {item.glossary ? (
+                                                    <ul>
+                                                        {item.glossary?.terms?.map(
+                                                            (term) => (
+                                                                <li>
+                                                                    <GlossaryItem
+                                                                        word={
+                                                                            term.term ??
+                                                                            "???"
+                                                                        }
+                                                                        definition={
+                                                                            term.meaning ??
+                                                                            "???"
+                                                                        }
+                                                                        timestamp={
+                                                                            term.timestamp
+                                                                        }
+                                                                        audio={{
+                                                                            id: item.id,
+                                                                            filename:
+                                                                                item.filename
+                                                                        }}
+                                                                        handleTimeclick={
+                                                                            handleTimeclick
+                                                                        }
+                                                                    />
+                                                                </li>
+                                                            )
+                                                        )}
+                                                    </ul>
+                                                ) : (
+                                                    <LinearProgress />
+                                                )}
                                             </Typography>
                                         </AccordionDetails>
                                     </Accordion>
@@ -496,7 +502,7 @@ export const KonspektPage = (props) => {
                                             </span>
                                         </AccordionSummary>
                                         <AccordionDetails>
-                                            {item.summary && (
+                                            {item.summary ? (
                                                 <Typography>
                                                     <h3>Введение</h3>
                                                     <p>
@@ -507,7 +513,7 @@ export const KonspektPage = (props) => {
                                                         }
                                                     </p>
 
-                                                    <h3>Основаная часть</h3>
+                                                    <h3>Основная часть</h3>
                                                     <p>
                                                         {
                                                             item.summary[
@@ -525,6 +531,8 @@ export const KonspektPage = (props) => {
                                                         }
                                                     </p>
                                                 </Typography>
+                                            ) : (
+                                                <LinearProgress />
                                             )}
                                         </AccordionDetails>
                                     </Accordion>
@@ -579,20 +587,23 @@ export const KonspektPage = (props) => {
             </LoadingButton>
             <Dialog open={openDialog} onClose={handleCloseDialog}>
                 <DialogTitle>Загрузить аудио</DialogTitle>
-                <DialogContent sx={{display: 'flex', flexDirection: 'column'}}>
+                <DialogContent
+                    sx={{ display: "flex", flexDirection: "column" }}
+                >
                     <FormLabel>Файл аудиозаписи</FormLabel>
                     <MuiFileInput
                         placeholder="Нажмите, чтобы выбрать файл"
-                        value={file} onChange={handleFileChange}
+                        value={file}
+                        onChange={handleFileChange}
                         clearIconButtonProps={{
                             children: <CloseIcon fontSize="small" />
                         }}
                         inputProps={{
-                            accept: 'audio/*',
+                            accept: "audio/*",
                             startIcon: <AttachFileIcon />
-                        }}>
-                    </MuiFileInput>
-                    <div style={{ margin: '1em 0' }}></div>
+                        }}
+                    ></MuiFileInput>
+                    <div style={{ margin: "1em 0" }}></div>
                     <FormLabel>Режим транскрибирования</FormLabel>
                     <RadioGroup
                         row
@@ -600,12 +611,22 @@ export const KonspektPage = (props) => {
                         name="radio-buttons-group"
                         onChange={handleModeChange}
                     >
-                        <FormControlLabel value="fast" control={<Radio />} label="Быстрый" />
-                        <FormControlLabel value="precise" control={<Radio />} label="Точный" />
+                        <FormControlLabel
+                            value="fast"
+                            control={<Radio />}
+                            label="Быстрый"
+                        />
+                        <FormControlLabel
+                            value="precise"
+                            control={<Radio />}
+                            label="Точный"
+                        />
                     </RadioGroup>
                 </DialogContent>
                 <DialogActions>
-                    <Button color="error" onClick={handleCloseDialog}>Отмена</Button>
+                    <Button color="error" onClick={handleCloseDialog}>
+                        Отмена
+                    </Button>
                     <Button onClick={handleSubmit}>Загрузить</Button>
                 </DialogActions>
             </Dialog>
