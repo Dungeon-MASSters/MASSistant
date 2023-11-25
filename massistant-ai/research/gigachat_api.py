@@ -25,7 +25,7 @@ class GigaChat:
 
     def process(self, filename):
         df = pd.read_excel(filename)
-        d = dict(zip(df['chunks'].to_list(), df['keywords'].to_list()))
+        d = dict(zip(df['chunks'].to_list()[:-1], df['keywords'].to_list()[:-1]))
 
         i = 1
         for key in d.keys():
@@ -33,6 +33,7 @@ class GigaChat:
             i += 1
 
             keywords = self.giga_chat_generate('Напиши 10 важных слов или терминов из следующего текста: ' + key)
+            
             if keywords is not None:
                 d.update({key: keywords})
 
@@ -57,7 +58,7 @@ class GigaChat:
                     verify=False,
                     timeout=20
                 )
-
+                # print(response.json())
                 answer = response.json()['choices'][0]['message']['content']
 
                 return answer
@@ -67,6 +68,7 @@ class GigaChat:
             except Exception as e:
                 return None
         except:
+            raise
             return None 
             
     def update_giga_chat_acsses_token(self):
@@ -115,6 +117,7 @@ class GigaChat:
                 raise
 
         except Exception as e:
+            raise
             return ''
         
         access_token = request.json()['access_token']

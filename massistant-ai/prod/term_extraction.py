@@ -54,6 +54,6 @@ class TermExtraction:
         return summary
 
 a = TermExtraction()
-print(a.get_term_meanings('Python - это язык программирования. Он (python) используется для веб-разработки, машинного обучения.', terms=['python']))
+print(a.get_term_meanings('Во-вторых машинное обучение', terms=['машинное обучение']))
 
         
