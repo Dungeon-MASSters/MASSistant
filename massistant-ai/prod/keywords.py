@@ -10,7 +10,7 @@ class Keywords:
 
     @free_cache
     def load_model(self) -> None:
-        self.bert_dir = Path(__file__).resolve().parent.joinpath('bert-base-v2')
+        self.bert_dir = Path(__file__).resolve().parent.joinpath('bert-base-v3')
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.bert_dir, add_prefix_space=True)
         self.model = AutoModelForTokenClassification.from_pretrained(self.bert_dir, num_labels=3).to('cuda:0')
@@ -38,12 +38,12 @@ class Keywords:
                 keywords.append(keywords_item)
         return keywords
     
-# a = Keywords()
+a = Keywords()
 
-# data = ''
-# with open('text.txt', mode='r', encoding='utf-8') as f:
-#     data = f.read()
+data = ''
+with open('text.txt', mode='r', encoding='utf-8') as f:
+    data = f.read()
 
-# data = [data]
-# keywords = a.get_keywords(data, 1)
-# print(keywords)
+data = [data]
+keywords = a.get_keywords(data, 1)
+print(keywords)
