@@ -12,7 +12,7 @@ MODEL = 'bert-base-multilingual-uncased'
 # MODEL = 'xlm-roberta-large'
 # MODEL = 'bert-base-multilingual-cased'
 
-DATA = 'bio.csv'
+DATA = 'data/bio_concat.csv'
 BATCH_SIZE = 6
 
 dataset = load_dataset('csv', data_files=DATA)
@@ -70,7 +70,7 @@ def compute_metrics(p):
     }
 
 args = TrainingArguments(
-    f"{MODEL}-finetuned_v2",
+    f"{MODEL}-finetuned_v3",
     # evaluation_strategy = "epoch",
     logging_strategy = 'epoch',
     save_total_limit=1,
