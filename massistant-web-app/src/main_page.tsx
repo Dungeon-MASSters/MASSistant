@@ -20,12 +20,11 @@ export const MainPage = () => {
             <div className="gradient-2"></div>
         </div>
         <div className="content" style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center'
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between'
         }}>
-            <Typography variant="h2" sx={{ fontWeight: 'bolder', mb: 2 }}>Устали писать конспекты?</Typography>
-            <Divider />
-            <Typography variant="h4" sx={{ mb: 4, fontSize: '18pt' }}>📒Поможем выделить <span style={{textDecoration: 'underline'}}>главное</span> в лекциях✍️</Typography>
-            <Typography variant="h4" sx={{ fontSize: '18pt' }}>
+            <Typography variant="h2" sx={{ fontWeight: 'bolder' }}>Устали писать конспекты?</Typography>
+            <Typography variant="h4">📒Поможем выделить <span style={{textDecoration: 'underline'}}>главное</span> в лекциях✍️</Typography>
+            <Typography variant="h4" sx={{ mt: 3, fontSize: '18pt' }}>
                 <Link
                     onClick={() => navigate("/login_page")}>Войти</Link>
                 <span>{" или "}</span>

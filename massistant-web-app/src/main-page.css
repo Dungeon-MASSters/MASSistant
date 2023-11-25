@@ -7,7 +7,7 @@
 }
 
 .cover img {
-    height: 90%;
+    height: 95%;
     width: 100%;
     object-fit: cover;
 }
@@ -27,15 +27,17 @@
     width: 100%;
     bottom: 0;
     right: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(244,244,250,1) 50%);
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(244,244,250,1) 80%);
 }
 
 .content {
-    padding: 2em 5em;
+    height: 35%;
+    max-height: 32em;
+    padding: 2em 4em;
     /* border: 1em double #808084; */
-    border-radius: 32px;
-    background-color: rgba(244,245,250,0.9);
-    box-shadow: 0 0 3em 3em rgba(244,244,250,0.9);
+    border-radius: 12em;
+    background-color: rgba(244,245,250, 0.9);
+    box-shadow: 0 0 3em 3em rgba(244,244,250, 0.9);
     /* inset 0 0 1em 1em rgba(244,244,250,1);  */
     /* background: radial-gradient(ellipse farthest-side, rgba(244,245,250,1) 50%, rgba(0,0,0,0) 100%); */
     z-index: 99;
