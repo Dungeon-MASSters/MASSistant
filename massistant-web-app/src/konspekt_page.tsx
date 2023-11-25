@@ -176,7 +176,7 @@ export const KonspektPage = (props) => {
         ["get-konspekts"],
         () => getKonspektsList(),
         {
-            refetchInterval: 5
+            refetchInterval: 500
         }
     );
 
