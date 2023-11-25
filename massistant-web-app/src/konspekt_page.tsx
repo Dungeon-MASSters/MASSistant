@@ -27,13 +27,15 @@ import {
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import axios from "axios";
-import { useRef, useState } from "react";
+import { createRef, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import { apiUrl } from "./utils/api";
 import moment from "moment";
+import { PlayCircle } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { KonspektPlayer } from "./konspekt_player";
 import './konspekt-page.css';
+import H5AudioPlayer from "react-h5-audio-player";
 
 const uploadKonspekt = (audio: File) => {
     const url = apiUrl + "/konspekt";
@@ -44,6 +46,9 @@ const uploadKonspekt = (audio: File) => {
     return axios.post(url, formData, {
         headers: {
             "Content-Type": "multipart/form-data"
+        },
+        params: {
+            mode: "fast"
         }
     });
 };
@@ -66,32 +71,35 @@ const getTime = (timestamp: number): string => {
   return time.substring(3, 8);
 };
 
-const handleTimeCode = (timestamp) => {
-        alert(timestamp)
-    };
-
 
 const GlossaryItem = ({
     word,
     definition,
-    timestamp
+    timestamp,
+    audio,
+    handleTimeclick
 }: {
     word: string;
     definition: string;
     timestamp: number;
+    audio: { id: number, filename: string };
+    handleTimeclick: (audio: { id: number, filename: string }, timestamp: number) => void
 }) => {
     return (
         <Stack direction="row" justifyContent="space-between">
             <span>
                 {word} - {definition}
             </span>
-            <Link  variant="button" onClick={() => handleTimeCode(timestamp)} >{getTime(timestamp)}</Link>
+            <Link  variant="button"
+                onClick={() => handleTimeclick(audio, timestamp)}>
+                {getTime(timestamp)}</Link>
         </Stack>
     );
 };
 
 export const KonspektPage = (props) => {
-    const [audio, setAudio] = useState<File | null>(null);
+    const [audioName, setAudio] = useState<string>('');
+    const [audioId, setAudioId] = useState<number | null>(null);
     const [uploadState, setUploadState] = useState("");
     const scrollTarget = useRef<HTMLDivElement | null>(null);
 
@@ -111,12 +119,30 @@ export const KonspektPage = (props) => {
             .then(() => getKonspektsQuery.refetch());
     };
 
+
+    // const player = createRef<H5AudioPlayer>();
+
+    const handlePlayClick = (id: any, filename: string) => {
+        if (id != audioId) {
+            setAudioId(id);
+            setAudio(filename);
+        }
+    };
+
+    const handleTimeclick = ({id, filename}: { id: number, filename: string }, timestamp: number) => {
+        handlePlayClick(id, filename);
+        // const htmlAudio = player.current?.audio.current
+        // if (htmlAudio) {
+        //     htmlAudio.currentTime = 33;
+        // }
+    }
+
     return (
         <>
             {getKonspektsQuery.isLoading ? (
-                <CircularProgress />
+                <CircularProgress sx={{pt: 3}}/>
             ) : (
-                <Stack spacing={'1em'}>
+                <Stack spacing={'1em'} sx={{pt: 3}}>
                     {getKonspektsQuery.data.map((item: any, index) => {
                         return (
                             <Accordion key={item.id} className="list-accordion cheat" sx={{
@@ -139,23 +165,33 @@ export const KonspektPage = (props) => {
                                                 justifyContent: 'space-between',
                                                 alignItems: 'center'
                                             }}>
-                                                <Typography variant="h6"><span>{item.original_filename}</span></Typography>
+                                                <div style={{ display: 'flex', alignItems: 'center', maxWidth: '25em' }}>
+                                                    <Typography variant="h6" noWrap>
+                                                        {item.original_filename}
+                                                    </Typography>
+                                                    <IconButton
+                                                        sx={{
+                                                            ml: 1
+                                                        }}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handlePlayClick(item.id, item.filename);
+                                                        }}>
+                                                        <PlayCircle />
+                                                    </IconButton>
+                                                </div>
                                                 <span style={{
                                                     fontSize: '1em',
                                                     color: '#8d46f4',
                                                     opacity: 0.75,
                                                 }}>{moment(item.created_at).calendar()}</span>
                                             </div>
-                                            <IconButton onClick={() =>
-                                                            handleDelete(item.id)
-                                                        }>
+                                            <IconButton
+                                                onClick={() =>
+                                                    handleDelete(item.id)
+                                                }>
                                                 <DeleteIcon />
                                             </IconButton>
-                                        </div>
-                                        <div className="player-container">
-                                            <KonspektPlayer
-                                                filename={item.filename}
-                                            ></KonspektPlayer>
                                         </div>
                                     </div>
                                 </AccordionSummary>
@@ -193,7 +229,9 @@ export const KonspektPage = (props) => {
                                                         <GlossaryItem
                                                             word="Lorem"
                                                             definition="Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat."
-                                                            timestamp={67}
+                                                            timestamp={2}
+                                                            audio={{id: item.id, filename: item.filename}}
+                                                            handleTimeclick={handleTimeclick}
                                                         />
                                                     </li>
                                                 </ul>
@@ -218,14 +256,23 @@ export const KonspektPage = (props) => {
                     <div ref={scrollTarget}></div>
                 </Stack>
             )}
-
+            {audioId != null && <div style={{
+                height: '4em',
+            }}></div>}
+            <div style={{ display: audioId === null ? 'none' : 'block' }}
+                className="player-container">
+                <KonspektPlayer
+                    filename={audioName}
+                    // playerRef={player}
+                ></KonspektPlayer>
+            </div>
             <LoadingButton
                 variant="contained"
                 component="label"
                 sx={{
                     position: "fixed",
                     right: 32,
-                    bottom: 32,
+                    bottom: audioId === null ? 32 : 120,
                     padding: 2
                 }}
                 loading={uploadState === "uploading"}
