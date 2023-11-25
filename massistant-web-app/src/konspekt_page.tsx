@@ -23,7 +23,8 @@ import {
     LinearProgress,
     IconButton,
     Link,
-    Slider, createTheme
+    Slider,
+    createTheme
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import axios from "axios";
@@ -34,7 +35,7 @@ import moment from "moment";
 import { PlayCircle } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { KonspektPlayer } from "./konspekt_player";
-import './konspekt-page.css';
+import "./konspekt-page.css";
 import H5AudioPlayer from "react-h5-audio-player";
 
 const uploadKonspekt = (audio: File) => {
@@ -66,11 +67,10 @@ const KonspektCard = styled(Paper)(({ theme }) => ({
 }));
 
 const getTime = (timestamp: number): string => {
-  const date = new Date(1000 * timestamp); // unix timestamp in seconds to milliseconds conversion
-  const time = date.toTimeString();
-  return time.substring(3, 8);
+    const date = new Date(1000 * timestamp); // unix timestamp in seconds to milliseconds conversion
+    const time = date.toTimeString();
+    return time.substring(3, 8);
 };
-
 
 const GlossaryItem = ({
     word,
@@ -82,23 +82,29 @@ const GlossaryItem = ({
     word: string;
     definition: string;
     timestamp: number;
-    audio: { id: number, filename: string };
-    handleTimeclick: (audio: { id: number, filename: string }, timestamp: number) => void
+    audio: { id: number; filename: string };
+    handleTimeclick: (
+        audio: { id: number; filename: string },
+        timestamp: number
+    ) => void;
 }) => {
     return (
         <Stack direction="row" justifyContent="space-between">
             <span>
                 {word} - {definition}
             </span>
-            <Link  variant="button"
-                onClick={() => handleTimeclick(audio, timestamp)}>
-                {getTime(timestamp)}</Link>
+            <Link
+                variant="button"
+                onClick={() => handleTimeclick(audio, timestamp)}
+            >
+                {getTime(timestamp)}
+            </Link>
         </Stack>
     );
 };
 
 export const KonspektPage = (props) => {
-    const [audioName, setAudio] = useState<string>('');
+    const [audioName, setAudio] = useState<string>("");
     const [audioId, setAudioId] = useState<number | null>(null);
     const [uploadState, setUploadState] = useState("");
     const scrollTarget = useRef<HTMLDivElement | null>(null);
@@ -119,7 +125,6 @@ export const KonspektPage = (props) => {
             .then(() => getKonspektsQuery.refetch());
     };
 
-
     // const player = createRef<H5AudioPlayer>();
 
     const handlePlayClick = (id: any, filename: string) => {
@@ -129,44 +134,68 @@ export const KonspektPage = (props) => {
         }
     };
 
-    const handleTimeclick = ({id, filename}: { id: number, filename: string }, timestamp: number) => {
+    const handleTimeclick = (
+        { id, filename }: { id: number; filename: string },
+        timestamp: number
+    ) => {
         handlePlayClick(id, filename);
         // const htmlAudio = player.current?.audio.current
         // if (htmlAudio) {
         //     htmlAudio.currentTime = 33;
         // }
-    }
+    };
 
     return (
         <>
             {getKonspektsQuery.isLoading ? (
-                <CircularProgress sx={{pt: 3}}/>
+                <CircularProgress sx={{ pt: 3 }} />
             ) : (
-                <Stack spacing={'1em'} sx={{pt: 3}}>
+                <Stack spacing={"1em"} sx={{ pt: 3 }}>
                     {getKonspektsQuery.data.map((item: any, index) => {
                         return (
-                            <Accordion key={item.id} className="list-accordion cheat" sx={{
-                                borderRadius: '16px',
-                            }} disableGutters>
+                            <Accordion
+                                key={item.id}
+                                className="list-accordion cheat"
+                                sx={{
+                                    borderRadius: "16px"
+                                }}
+                                disableGutters
+                            >
                                 <AccordionSummary expandIcon={<ExpandMore />}>
-                                    <div style={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        width: '100%',
-                                    }}>
-                                        <div style={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            width: '100%',
-                                        }}>
-                                            <div style={{
-                                                display: 'flex',
-                                                flexGrow: 1,
-                                                justifyContent: 'space-between',
-                                                alignItems: 'center'
-                                            }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', maxWidth: '25em' }}>
-                                                    <Typography variant="h6" noWrap>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            width: "100%"
+                                        }}
+                                    >
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                width: "100%"
+                                            }}
+                                        >
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    flexGrow: 1,
+                                                    justifyContent:
+                                                        "space-between",
+                                                    alignItems: "center"
+                                                }}
+                                            >
+                                                <div
+                                                    style={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        maxWidth: "25em"
+                                                    }}
+                                                >
+                                                    <Typography
+                                                        variant="h6"
+                                                        noWrap
+                                                    >
                                                         {item.original_filename}
                                                     </Typography>
                                                     <IconButton
@@ -175,33 +204,55 @@ export const KonspektPage = (props) => {
                                                         }}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            handlePlayClick(item.id, item.filename);
-                                                        }}>
+                                                            handlePlayClick(
+                                                                item.id,
+                                                                item.filename
+                                                            );
+                                                        }}
+                                                    >
                                                         <PlayCircle />
                                                     </IconButton>
                                                 </div>
-                                                <span style={{
-                                                    fontSize: '1em',
-                                                    color: '#8d46f4',
-                                                    opacity: 0.75,
-                                                }}>{moment(item.created_at).calendar()}</span>
+                                                <span
+                                                    style={{
+                                                        fontSize: "1em",
+                                                        color: "#8d46f4",
+                                                        opacity: 0.75
+                                                    }}
+                                                >
+                                                    {moment(
+                                                        item.created_at
+                                                    ).calendar()}
+                                                </span>
                                             </div>
                                             <IconButton
                                                 onClick={() =>
                                                     handleDelete(item.id)
-                                                }>
+                                                }
+                                            >
                                                 <DeleteIcon />
                                             </IconButton>
                                         </div>
                                     </div>
                                 </AccordionSummary>
                                 <AccordionDetails>
-                                    <Accordion sx={{ boxShadow: 'none' }} disableGutters>
+                                    <Accordion
+                                        sx={{ boxShadow: "none" }}
+                                        disableGutters
+                                    >
                                         <AccordionSummary
                                             expandIcon={<ExpandMore />}
                                         >
-                                            <span style={{ fontWeight: 'bold', fontSize: '1em', opacity: 0.8 }}>
-                                                Транскрибация (прям свежая с бекенда)</span>
+                                            <span
+                                                style={{
+                                                    fontWeight: "bold",
+                                                    fontSize: "1em",
+                                                    opacity: 0.8
+                                                }}
+                                            >
+                                                Транскрибация (прям свежая с
+                                                бекенда)
+                                            </span>
                                         </AccordionSummary>
                                         <AccordionDetails>
                                             <Typography>
@@ -215,27 +266,76 @@ export const KonspektPage = (props) => {
                                             </Typography>
                                         </AccordionDetails>
                                     </Accordion>
-                                    <Accordion sx={{ boxShadow: 'none' }} disableGutters>
+                                    <Accordion
+                                        sx={{ boxShadow: "none" }}
+                                        disableGutters
+                                    >
                                         <AccordionSummary
                                             expandIcon={<ExpandMore />}
                                         >
-                                            <span style={{ fontWeight: 'bold', fontSize: '1em', opacity: 0.8 }}>
-                                                Глоссарий</span>
+                                            <span
+                                                style={{
+                                                    fontWeight: "bold",
+                                                    fontSize: "1em",
+                                                    opacity: 0.8
+                                                }}
+                                            >
+                                                Глоссарий
+                                            </span>
                                         </AccordionSummary>
                                         <AccordionDetails>
                                             <Typography>
                                                 <ul>
-                                                    <li>
-                                                        <GlossaryItem
-                                                            word="Lorem"
-                                                            definition="Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat."
-                                                            timestamp={2}
-                                                            audio={{id: item.id, filename: item.filename}}
-                                                            handleTimeclick={handleTimeclick}
-                                                        />
-                                                    </li>
+                                                    {item.glossary?.terms?.map(
+                                                        (term) => (
+                                                            <li>
+                                                                <GlossaryItem
+                                                                    word={
+                                                                        term.term ??
+                                                                        "???"
+                                                                    }
+                                                                    definition={
+                                                                        term.meaning ??
+                                                                        "???"
+                                                                    }
+                                                                    timestamp={
+                                                                        term.timestamp
+                                                                    }
+                                                                    audio={{
+                                                                        id: item.id,
+                                                                        filename:
+                                                                            item.filename
+                                                                    }}
+                                                                    handleTimeclick={
+                                                                        handleTimeclick
+                                                                    }
+                                                                />
+                                                            </li>
+                                                        )
+                                                    )}
                                                 </ul>
                                             </Typography>
+                                        </AccordionDetails>
+                                    </Accordion>
+                                    <Accordion
+                                        sx={{ boxShadow: "none" }}
+                                        disableGutters
+                                    >
+                                        <AccordionSummary
+                                            expandIcon={<ExpandMore />}
+                                        >
+                                            <span
+                                                style={{
+                                                    fontWeight: "bold",
+                                                    fontSize: "1em",
+                                                    opacity: 0.8
+                                                }}
+                                            >
+                                                Краткое содержание
+                                            </span>
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+
                                         </AccordionDetails>
                                     </Accordion>
                                     <Link
@@ -256,11 +356,17 @@ export const KonspektPage = (props) => {
                     <div ref={scrollTarget}></div>
                 </Stack>
             )}
-            {audioId != null && <div style={{
-                height: '4em',
-            }}></div>}
-            <div style={{ display: audioId === null ? 'none' : 'block' }}
-                className="player-container">
+            {audioId != null && (
+                <div
+                    style={{
+                        height: "4em"
+                    }}
+                ></div>
+            )}
+            <div
+                style={{ display: audioId === null ? "none" : "block" }}
+                className="player-container"
+            >
                 <KonspektPlayer
                     filename={audioName}
                     // playerRef={player}
