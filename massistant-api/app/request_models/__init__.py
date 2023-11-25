@@ -10,3 +10,6 @@ class UploadExtractedTerms(BaseModel):
 
 class UploadExtractedSummary(BaseModel):
     data: dict[str, str]
+
+class UpdateKonspektText(BaseModel):
+    text: str

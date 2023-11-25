@@ -24,22 +24,34 @@ import {
     IconButton,
     Link,
     Slider,
-    createTheme
+    createTheme,
+    TextareaAutosize,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    FormLabel,
+    FormControlLabel,
+    Radio,
+    RadioGroup
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import axios from "axios";
-import { createRef, useRef, useState } from "react";
+import { ChangeEvent, createRef, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import { apiUrl } from "./utils/api";
 import moment from "moment";
 import { PlayCircle } from "@mui/icons-material";
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from "@mui/icons-material/Delete";
 import { KonspektPlayer } from "./konspekt_player";
 import "./konspekt-page.css";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 import H5AudioPlayer from "react-h5-audio-player";
+import { MuiFileInput } from "mui-file-input";
 
-const uploadKonspekt = (audio: File) => {
+const uploadKonspekt = (audio: File, mode: string) => {
     const url = apiUrl + "/konspekt";
 
     let formData = new FormData();
@@ -94,12 +106,12 @@ const GlossaryItem = ({
             <span>
                 {word} - {definition}
             </span>
-            <Link
-                variant="button"
+            <Button
+                variant="text"
                 onClick={() => handleTimeclick(audio, timestamp)}
             >
                 {getTime(timestamp)}
-            </Link>
+            </Button>
         </Stack>
     );
 };
@@ -109,6 +121,56 @@ export const KonspektPage = (props) => {
     const [audioId, setAudioId] = useState<number | null>(null);
     const [uploadState, setUploadState] = useState("");
     const scrollTarget = useRef<HTMLDivElement | null>(null);
+
+    const [editItemID, setEditItemID] = useState<number | undefined>(undefined);
+    const [editItemText, setEditItemText] = useState<string | undefined>(
+        undefined
+    );
+
+    const [openDialog, setOpenDialog] = useState(false);
+    const [file, changeFile] = useState<File | null | undefined>(null);
+    const [mode, changeMode] = useState('fast');
+
+    const handleFileChange = (newValue: File | null) => {
+        changeFile(newValue);
+    }
+
+    const handleClickOpenDialog = () => {
+        setOpenDialog(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
+
+    const handleModeChange = (e: ChangeEvent, newValue: string) => {
+        changeMode(newValue);
+    }
+
+    const handleSubmit = async () => {
+        handleCloseDialog();
+        setUploadState("uploading");
+
+        try {
+            if (file === null || file === undefined) {
+                setUploadState("error");
+                return;
+            }
+
+            let res = await uploadKonspekt(file, mode);
+            console.log(res);
+            setUploadState("done");
+            getKonspektsQuery.refetch().then(() => {
+                scrollTarget.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "end"
+                });
+            });
+        } catch (e) {
+            console.error(e);
+            setUploadState("error");
+        }
+    }
 
     const getKonspektsQuery = useQuery(
         ["get-konspekts"],
@@ -126,11 +188,11 @@ export const KonspektPage = (props) => {
             .then(() => getKonspektsQuery.refetch());
     };
 
-    const handleEdit = (id) => {
-
+    const player = createRef<H5AudioPlayer>();
+    const handleEdit = (id, text) => {
+        setEditItemID(id);
+        setEditItemText(text);
     };
-
-    // const player = createRef<H5AudioPlayer>();
 
     const handlePlayClick = (id: any, filename: string) => {
         if (id != audioId) {
@@ -144,10 +206,10 @@ export const KonspektPage = (props) => {
         timestamp: number
     ) => {
         handlePlayClick(id, filename);
-        // const htmlAudio = player.current?.audio.current
-        // if (htmlAudio) {
-        //     htmlAudio.currentTime = 33;
-        // }
+        const htmlAudio = player.current?.audio.current;
+        if (htmlAudio) {
+            htmlAudio.currentTime = timestamp;
+        }
     };
 
     return (
@@ -249,36 +311,47 @@ export const KonspektPage = (props) => {
                                             expandIcon={<ExpandMore />}
                                         >
                                             <div
-                                                    style={{
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        maxWidth: "25em"
-                                                    }}
-                                                >
-                                            <span
                                                 style={{
-                                                    fontWeight: "bold",
-                                                    fontSize: "1em",
-                                                    opacity: 0.8,
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    maxWidth: "25em"
                                                 }}
                                             >
-                                                Транскрибация
-                                            </span>
-                                            <IconButton
-                                                onClick={() =>
-                                                    handleEdit(item.id)
-                                                }
-                                            >
-                                                <EditIcon />
-                                            </IconButton>
+                                                <span
+                                                    style={{
+                                                        fontWeight: "bold",
+                                                        fontSize: "1em",
+                                                        opacity: 0.8
+                                                    }}
+                                                >
+                                                    Транскрибация
+                                                </span>
+                                                <IconButton
+                                                    onClick={() =>
+                                                        handleEdit(
+                                                            item.id,
+                                                            item.trans_text
+                                                        )
+                                                    }
+                                                >
+                                                    <EditIcon />
+                                                </IconButton>
                                             </div>
                                         </AccordionSummary>
                                         <AccordionDetails>
                                             <Typography>
                                                 {item.trans_text ? (
-                                                    <p>
-                                                        Текст: {item.trans_text}
-                                                    </p>
+                                                    item.id === editItemID ? (
+                                                        <TextareaAutosize
+                                                            minRows={10}
+                                                            style={{
+                                                                width: "100%"
+                                                            }}
+                                                            value={editItemText}
+                                                        />
+                                                    ) : (
+                                                        <p>{item.trans_text}</p>
+                                                    )
                                                 ) : (
                                                     <LinearProgress />
                                                 )}
@@ -365,7 +438,6 @@ export const KonspektPage = (props) => {
                                                         }
                                                     </p>
 
-
                                                     <h3>Основаная часть</h3>
                                                     <p>
                                                         {
@@ -374,7 +446,6 @@ export const KonspektPage = (props) => {
                                                             ]
                                                         }
                                                     </p>
-
 
                                                     <h3>Заключение</h3>
                                                     <p>
@@ -419,7 +490,7 @@ export const KonspektPage = (props) => {
             >
                 <KonspektPlayer
                     filename={audioName}
-                    // playerRef={player}
+                    playerRef={player}
                 ></KonspektPlayer>
             </div>
             <LoadingButton
@@ -433,39 +504,42 @@ export const KonspektPage = (props) => {
                 }}
                 loading={uploadState === "uploading"}
                 startIcon={<AudioFileRounded />}
+                onClick={handleClickOpenDialog}
             >
                 <span>Загрузить запись лекции</span>
-
-                <input
-                    id="audio-file"
-                    type="file"
-                    hidden
-                    accept="audio/*"
-                    onChange={async (e) => {
-                        setUploadState("uploading");
-
-                        try {
-                            if (e.target.files === null) {
-                                setUploadState("error");
-                                return;
-                            }
-
-                            let res = await uploadKonspekt(e.target.files[0]);
-                            console.log(res);
-                            setUploadState("done");
-                            getKonspektsQuery.refetch().then(() => {
-                                scrollTarget.current?.scrollIntoView({
-                                    behavior: "smooth",
-                                    block: "end"
-                                });
-                            });
-                        } catch (e) {
-                            console.error(e);
-                            setUploadState("error");
-                        }
-                    }}
-                />
             </LoadingButton>
+            <Dialog open={openDialog} onClose={handleCloseDialog}>
+                <DialogTitle>Загрузить аудио</DialogTitle>
+                <DialogContent sx={{display: 'flex', flexDirection: 'column'}}>
+                    <FormLabel>Файл аудиозаписи</FormLabel>
+                    <MuiFileInput
+                        placeholder="Нажмите, чтобы выбрать файл"
+                        value={file} onChange={handleFileChange}
+                        clearIconButtonProps={{
+                            children: <CloseIcon fontSize="small" />
+                        }}
+                        inputProps={{
+                            accept: 'audio/*',
+                            startAdornment: <AttachFileIcon />
+                        }}>
+                    </MuiFileInput>
+                    <div style={{ margin: '1em 0' }}></div>
+                    <FormLabel>Режим транскрибирования</FormLabel>
+                    <RadioGroup
+                        row
+                        defaultValue="fast"
+                        name="radio-buttons-group"
+                        onChange={handleModeChange}
+                    >
+                        <FormControlLabel value="fast" control={<Radio />} label="Быстрый" />
+                        <FormControlLabel value="precise" control={<Radio />} label="Точный" />
+                    </RadioGroup>
+                </DialogContent>
+                <DialogActions>
+                    <Button color="error" onClick={handleCloseDialog}>Отмена</Button>
+                    <Button onClick={handleSubmit}>Загрузить</Button>
+                </DialogActions>
+            </Dialog>
         </>
     );
 };
