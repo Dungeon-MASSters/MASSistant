@@ -211,6 +211,8 @@ export const KonspektPage = (props) => {
         }
     };
 
+
+
     const handleTextEditSubmit = async () => {
         try {
             if (editItemID && editItemText) {
