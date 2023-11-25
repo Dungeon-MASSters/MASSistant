@@ -68,26 +68,28 @@ const getTime = (timestamp: number): string => {
   return time.substring(3, 8);
 };
 
-const handleTimeCode = (timestamp) => {
-        alert(timestamp)
-    };
-
 
 const GlossaryItem = ({
     word,
     definition,
-    timestamp
+    timestamp,
+    audio,
+    handleTimeclick
 }: {
     word: string;
     definition: string;
     timestamp: number;
+    audio: { id: number, filename: string };
+    handleTimeclick: (audio: { id: number, filename: string }, timestamp: number) => void
 }) => {
     return (
         <Stack direction="row" justifyContent="space-between">
             <span>
                 {word} - {definition}
             </span>
-            <Link  variant="button" onClick={() => handleTimeCode(timestamp)} >{getTime(timestamp)}</Link>
+            <Link  variant="button"
+                onClick={() => handleTimeclick(audio, timestamp)}>
+                {getTime(timestamp)}</Link>
         </Stack>
     );
 };
@@ -115,21 +117,29 @@ export const KonspektPage = (props) => {
     };
 
 
-    const player = createRef<H5AudioPlayer>();
+    // const player = createRef<H5AudioPlayer>();
 
     const handlePlayClick = (id: any, filename: string) => {
         if (id != audioId) {
             setAudioId(id);
             setAudio(filename);
         }
+    };
+
+    const handleTimeclick = ({id, filename}: { id: number, filename: string }, timestamp: number) => {
+        handlePlayClick(id, filename);
+        // const htmlAudio = player.current?.audio.current
+        // if (htmlAudio) {
+        //     htmlAudio.currentTime = 33;
+        // }
     }
 
     return (
         <>
             {getKonspektsQuery.isLoading ? (
-                <CircularProgress />
+                <CircularProgress sx={{pt: 3}}/>
             ) : (
-                <Stack spacing={'1em'}>
+                <Stack spacing={'1em'} sx={{pt: 3}}>
                     {getKonspektsQuery.data.map((item: any, index) => {
                         return (
                             <Accordion key={item.id} className="list-accordion cheat" sx={{
@@ -216,7 +226,9 @@ export const KonspektPage = (props) => {
                                                         <GlossaryItem
                                                             word="Lorem"
                                                             definition="Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat."
-                                                            timestamp={67}
+                                                            timestamp={2}
+                                                            audio={{id: item.id, filename: item.filename}}
+                                                            handleTimeclick={handleTimeclick}
                                                         />
                                                     </li>
                                                 </ul>
@@ -248,7 +260,7 @@ export const KonspektPage = (props) => {
                 className="player-container">
                 <KonspektPlayer
                     filename={audioName}
-                    playerRef={player}
+                    // playerRef={player}
                 ></KonspektPlayer>
             </div>
             <LoadingButton

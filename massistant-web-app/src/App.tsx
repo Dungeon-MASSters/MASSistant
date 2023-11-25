@@ -31,6 +31,7 @@ import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import logo from "./assets/logo.png"
 import { create } from "@mui/material/styles/createTransitions";
 import { ThemeProvider } from "@emotion/react";
+import { useCookies } from "react-cookie";
 
 const KonspektRouter = () => {
     const router = useRouter();
@@ -47,6 +48,8 @@ const KonspektRouter = () => {
 function App() {
     const [count, setCount] = useState(0);
     const [_, navigate] = useLocation();
+
+    const [cookies, setCookie, removeCookie] = useCookies(['auth']);
 
     const [mobileOpen, setMobileOpen] = useState(false);
     const handleDrawerToggle = () => {
@@ -126,14 +129,19 @@ function App() {
                                 }}/></Button>
                         </Stack>
                         <Stack spacing={'1em'} direction="row">
-                            <Button color='secondary' variant="contained" sx={{ backgroundColor: '#e1e1e9' }}
-                                onClick={() => navigate("/login_page")}>Войти</Button>
-                            <Button color='secondary' variant="contained" sx={{ backgroundColor: '#e1e1e9' }}
-                                onClick={() => navigate("/reg_page")}>Регистрация</Button>
+                            {!cookies.auth && <Button color='secondary' variant="contained" sx={{backgroundColor: '#e1e1e9' }}
+                                onClick={() => navigate("/login_page")}>Войти</Button>}
+                            {!cookies.auth && <Button color='secondary' variant="contained" sx={{ backgroundColor: '#e1e1e9' }}
+                                onClick={() => navigate("/reg_page")}>Регистрация</Button>}
+                            {cookies.auth && <Button color='secondary' variant="contained" sx={{ backgroundColor: '#e1e1e9' }}
+                                onClick={() => {
+                                    removeCookie("auth");
+                                    navigate("/login_page");
+                                }}>Выйти</Button>}
                         </Stack>
                     </Toolbar>
                 </AppBar>
-                <nav>
+                <nav style={{ display: !cookies.auth ? 'none' : 'block' }}>
                     <Drawer
                         variant="permanent"
                         sx={{
@@ -179,14 +187,13 @@ function App() {
                     height: '100%',
                 }}>
                     <Box component="main" bgcolor={myTheme.palette.secondary.main} sx={{
-                        flexGrow: 1, p: 3 }}>
+                        flexGrow: 1, p: 3, pt: 0 }}>
                         <Toolbar />
                         {/* Это не нужно, потому что у вас и так в шапке название продукта есть */}
                         {/* <h1>MASSistant</h1> */}
                         <Router>
                             <Route path="/">
-                                <Redirect to="/konspekt"></Redirect>
-                                {/* <MainPage /> */}
+                                {cookies.auth ? <Redirect to="/konspekt"></Redirect> : <MainPage />}
                             </Route>
                             <KonspektRouter />
                             <Route path="/help_page">

@@ -1,0 +1,42 @@
+.cover {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
+
+.cover img {
+    height: 90%;
+    width: 100%;
+    object-fit: cover;
+}
+
+.gradient-1 {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,0,0,0) 0%, rgba(244,245,250,1) 80%);
+}
+
+.gradient-2 {
+    position: absolute;
+    height: 30%;
+    width: 100%;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(244,244,250,1) 50%);
+}
+
+.content {
+    padding: 2em 5em;
+    /* border: 1em double #808084; */
+    border-radius: 32px;
+    background-color: rgba(244,245,250,0.9);
+    box-shadow: 0 0 3em 3em rgba(244,244,250,0.9);
+    /* inset 0 0 1em 1em rgba(244,244,250,1);  */
+    /* background: radial-gradient(ellipse farthest-side, rgba(244,245,250,1) 50%, rgba(0,0,0,0) 100%); */
+    z-index: 99;
+}

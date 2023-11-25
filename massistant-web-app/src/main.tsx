@@ -8,13 +8,16 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
 import { QueryClient, QueryClientProvider } from "react-query";
+import { CookiesProvider } from "react-cookie"
 
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
-        <QueryClientProvider client={queryClient}>
-            <App />
-        </QueryClientProvider>
+        <CookiesProvider defaultSetOptions={{ path: '/' }}>
+            <QueryClientProvider client={queryClient}>
+                <App />
+            </QueryClientProvider>
+        </CookiesProvider>
     </React.StrictMode>
 );
