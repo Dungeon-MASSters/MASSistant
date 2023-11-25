@@ -42,10 +42,17 @@ class TermExtraction:
                 continue
 
             meaning = re.sub(r'\(.*\)\s*|\[.*\]\s*', '', meaning)
-            # meaning = re.split(r'—')
+            meaning = re.split(r'—\s*', meaning, maxsplit=1)
+            if len(meaning) == 1:
+                meaning = meaning[0]
+            else:
+                meaning = meaning[1]
+
             meaning = self.sa.get_sentences(self.sa(meaning))[0]
             if len(meaning) < 35:
                 continue
+
+            meaning = re.sub(r'\s+([,;\.\!\?/])', r'\1', meaning)
 
             output.append(dict(zip(
                 output_keys, (term, meaning, '')

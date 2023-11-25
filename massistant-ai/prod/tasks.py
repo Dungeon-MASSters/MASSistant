@@ -9,7 +9,7 @@ api_server = os.getenv("API_SERVER")
 if api_server is None:
     api_server = "https://demo.dungeon-massters.pro/api"
 
-files_dir = "/home/prof_evaluation/tmp/MASSistant/massistant-ai/prod/tmp/"
+files_dir = "/home/prof_evaluation/MASSistant/massistant-ai/prod/tmp/"
 
 if not os.path.exists(files_dir):
     os.mkdir(files_dir)

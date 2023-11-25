@@ -21,7 +21,7 @@ from app.response_models import (
 )
 from app.request_models import UploadExtractedSummary, UploadExtractedTerms, UploadTranscribedText
 
-from app.tasks import send_transcribe_task, celeryFeedback
+from app.tasks import send_summary_task, send_terms_task, send_transcribe_task, celeryFeedback
 
 import docx
 
@@ -194,6 +194,9 @@ def set_konspket_transcribed_text(kid: int, transcribed: UploadTranscribedText, 
     konspekt_upload.transcribe = text
     konspekt_upload.status = "transcribed"
     db.commit()
+
+    send_terms_task(kid, text)
+    send_summary_task(kid, text)
 
     return TranscribeUploadSuccessResponse(
         msg="Транскрибированный текст сохранен в базу данных",

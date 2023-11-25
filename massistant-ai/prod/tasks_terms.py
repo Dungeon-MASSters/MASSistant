@@ -11,24 +11,6 @@ api_server = os.getenv("API_SERVER")
 if api_server is None:
     api_server = "https://demo.dungeon-massters.pro/api"
 
-files_dir = "/home/prof_evaluation/tmp/MASSistant/massistant-ai/prod/tmp/"
-
-if not os.path.exists(files_dir):
-    os.mkdir(files_dir)
-
-
-def get_file_from_server(filename: str) -> str:
-    path_to_file = os.path.join(files_dir, filename)
-    if os.path.exists(path_to_file):
-        return path_to_file
-
-    url = api_server + "/konspekt/audio/" + filename
-    resp = requests.get(url, allow_redirects=True)
-    open(path_to_file, "wb").write(resp.content)
-
-    return path_to_file
-
-
 def send_to_api_server(id: int, extracted_terms: list[dict[str, str]]) -> int:
     url = api_server + "/konspekt/" + str(id) + "/terms"
     resp = requests.post(url, json={'data': extracted_terms})
