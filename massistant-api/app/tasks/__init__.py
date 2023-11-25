@@ -15,6 +15,21 @@ def send_transcribe_task(id: int, filename: str, mode: str):
     )
 
 
+def send_terms_task(id: int, text: str):
+    celeryApp.send_task(
+        'tasks_terms.do_extract_terms_stuff',
+        args=[id, text],
+        kwargs={}
+    )
+
+
+def send_summary_task(id: int, text: str):
+    celeryApp.send_task(
+        'tasks_summary.do_extract_summary_stuff',
+        args=[id, text],
+        kwargs={}
+    )
+
 celeryFeedback = Celery(
     'feedback',
     'rpc://',
