@@ -374,8 +374,12 @@ export const KonspektPage = (props) => {
                                                             }}
                                                         />
                                                     ) : (
-                                                        <Box sx={{ maxHeight: "18em", overflowY: 'auto'}}>
-                                                            <p style={{whiteSpace: "pre"}}>{item.trans_text}</p>
+                                                        <Box sx={{ width: '100%', maxHeight: "18em", overflowY: 'auto'}}>
+                                                            <Box sx={{ width: "95%", whiteSpace: "pre-wrap"}}>{item.trans_text}</Box>
+                                                            
+                                                            {/* <p style={{
+                                                                // whiteSpace: "pre"
+                                                            }}>{item.trans_text}</p> */}
                                                         </Box>
                                                     )
                                                 ) : (
