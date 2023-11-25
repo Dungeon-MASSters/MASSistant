@@ -8,8 +8,7 @@ END = 0.15
 STEP = 0.1
 NUM_SYMB = 600
 
-class GenerateSum():
-
+class GenerateSum:
     def __init__(self) -> None:
         self.DEVICE = torch.device('cuda:0')
         model_name = "IlyaGusev/rut5_base_sum_gazeta"

@@ -6,7 +6,7 @@ class SyntaxAnalyzer:
     def __init__(self) -> None:
         self.pipeline = stanza.Pipeline(
             lang='ru', 
-            use_gpu=True, 
+            use_gpu=True,
             package='syntagrus'
         ) 
 
