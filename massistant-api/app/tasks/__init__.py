@@ -7,6 +7,20 @@ celeryApp = Celery(
 )
 
 
+celeryAppTerms = Celery(
+    'tasks_terms',
+    backend='rpc://',
+    broker='pyamqp://app:dungeon@rabbit.dungeon-massters.pro:5672/'
+)
+
+
+celeryAppSummary = Celery(
+    'tasks_summary',
+    backend='rpc://',
+    broker='pyamqp://app:dungeon@rabbit.dungeon-massters.pro:5672/'
+)
+
+
 def send_transcribe_task(id: int, filename: str, mode: str):
     celeryApp.send_task(
         'tasks.do_trans_stuff',
@@ -16,7 +30,7 @@ def send_transcribe_task(id: int, filename: str, mode: str):
 
 
 def send_terms_task(id: int, text: str):
-    celeryApp.send_task(
+    celeryAppTerms.send_task(
         'tasks_terms.do_extract_terms_stuff',
         args=[id, text],
         kwargs={}
@@ -24,7 +38,7 @@ def send_terms_task(id: int, text: str):
 
 
 def send_summary_task(id: int, text: str):
-    celeryApp.send_task(
+    celeryAppSummary.send_task(
         'tasks_summary.do_extract_summary_stuff',
         args=[id, text],
         kwargs={}
