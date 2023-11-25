@@ -4,6 +4,7 @@ import requests
 import base64
 from multiprocessing import Process, Manager
 from summary import GenerateSum
+from syntax_analyzer import SyntaxAnalyzer
 
 api_server = os.getenv("API_SERVER")
 if api_server is None:
@@ -44,12 +45,12 @@ summary = GenerateSum()
 analyzer = SyntaxAnalyzer()
 
 @app.task
-def do_extract_summary_stuff(id, filename, mode: str):
+def do_extract_summary_stuff(id, text: str, mode: str):
 
-    data = get_data(filename)  # если что файл кешируется в /tmp с прошлого этапа, но если он почему-то удален, то он скачается заново
-    print(filename, data)
+    #data = get_data(filename)  # если что файл кешируется в /tmp с прошлого этапа, но если он почему-то удален, то он скачается заново
+    #print(filename, data)
 
-    doc = analyzer(data)
+    doc = analyzer(text)
 
     sentences = analyzer.get_sentences(doc, normalize=False, upos=[])
     
