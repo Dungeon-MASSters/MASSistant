@@ -26,9 +26,9 @@ def get_file_from_server(filename: str) -> str:
     return path_to_file
 
 
-def send_to_api_server(id: int, extracted_terms: list) -> int:
+def send_to_api_server(id: int, extracted_summary: dict) -> int:
     url = api_server + "/konspekt/" + str(id) + "/summary"
-    resp = requests.post(url, json={'data': extracted_terms})
+    resp = requests.post(url, json={'data': extracted_summary})
 
     return resp.status_code
 
@@ -45,7 +45,7 @@ def do_extract_summary_stuff(id, filename, mode: str):
     data = get_file_from_server(filename)  # если что файл кешируется в /tmp с прошлого этапа, но если он почему-то удален, то он скачается заново
     print(filename, data)
     
-    extracted_summary: list = extract_summary_func_or_smth(data)
+    extracted_summary: dict = extract_summary_func_or_smth(data)
     print(extracted_summary)
 
     print(f'finished job: {filename}')
