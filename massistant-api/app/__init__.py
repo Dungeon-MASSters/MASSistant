@@ -261,12 +261,22 @@ def download_konspekt(kid: int, db: Session = Depends(get_db)):
     document = docx.Document()
     document.add_heading(konspekt_upload.original_filename, 0)
     document.add_paragraph("## Транскрибация\n", style='Heading 1')
-    document.add_paragraph(
-        "None" if konspekt_upload.transcribe is None else konspekt_upload.transcribe)
+    document.add_paragraph("None" if konspekt_upload.transcribe is None else konspekt_upload.transcribe)
     document.add_paragraph("## Глоссарий\n", style='Heading 1')
-    document.add_paragraph("- lorem\n"
-                           + "- ipsum\n"
-                           + "- dolor\n")
+
+    terms = konspekt_upload.glossary['terms']
+    for i in range(len(terms)):
+        document.add_paragraph(f"{terms[i]['term']} - {terms[i]['meaning']}")
+    document.add_paragraph("## Краткое содержание\n", style='Heading 1')
+    if konspekt_upload.summary is None:
+        document.add_paragraph("None")
+    else:
+        document.add_paragraph("###Введение\n", style='Heading 2')
+        document.add_paragraph("None" if konspekt_upload.summary['introduction'] is None else konspekt_upload.summary['introduction'])
+        document.add_paragraph("###Основная часть\n", style='Heading 2')
+        document.add_paragraph("None" if konspekt_upload.summary['main_part'] is None else konspekt_upload.summary['main_part'])
+        document.add_paragraph("###Основная часть\n", style='Heading 2')
+        document.add_paragraph("None" if konspekt_upload.summary['conclusion'] is None else konspekt_upload.summary['conclusion'])
 
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         document.save(tmp.name)
