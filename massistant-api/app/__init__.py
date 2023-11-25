@@ -19,7 +19,7 @@ from app.response_models import (
     KonspektUploadSuccessResponse,
     TranscribeUploadSuccessResponse,
 )
-from app.request_models import UploadExtractedSummary, UploadExtractedTerms, UploadTranscribedText
+from app.request_models import UpdateKonspektText, UploadExtractedSummary, UploadExtractedTerms, UploadTranscribedText
 
 from app.tasks import send_summary_task, send_terms_task, send_transcribe_task, celeryFeedback
 
@@ -280,4 +280,23 @@ def delete_konspekt(kid: int, db: Session = Depends(get_db)):
     return TranscribeUploadSuccessResponse(
         msg="Конспект удален",
         key="delete.success"
+    )
+
+
+@app.post("/api/konspekt/{kid}/text")
+def update_konspekt_text(kid: int, data: UpdateKonspektText, db: Session = Depends(get_db)):
+    konspekt_upload = get_konspekt_by_id(db, kid)
+
+    if konspekt_upload is None:
+        return DefaultErrorResponse(
+            error_msg="Неверный ID конспекта",
+            error_key="update_text.invalid_konspekt_id"
+        )
+
+    konspekt_upload.transcribe = data.text
+    db.commit()
+
+    return TranscribeUploadSuccessResponse(
+        msg="Конспект обновлен",
+        key="update_text.success"
     )
