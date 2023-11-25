@@ -93,12 +93,12 @@ const GlossaryItem = ({
             <span>
                 {word} - {definition}
             </span>
-            <Link
-                variant="button"
+            <Button
+                variant="text"
                 onClick={() => handleTimeclick(audio, timestamp)}
             >
                 {getTime(timestamp)}
-            </Link>
+            </Button>
         </Stack>
     );
 };
@@ -125,7 +125,7 @@ export const KonspektPage = (props) => {
             .then(() => getKonspektsQuery.refetch());
     };
 
-    // const player = createRef<H5AudioPlayer>();
+    const player = createRef<H5AudioPlayer>();
 
     const handlePlayClick = (id: any, filename: string) => {
         if (id != audioId) {
@@ -139,10 +139,10 @@ export const KonspektPage = (props) => {
         timestamp: number
     ) => {
         handlePlayClick(id, filename);
-        // const htmlAudio = player.current?.audio.current
-        // if (htmlAudio) {
-        //     htmlAudio.currentTime = 33;
-        // }
+        const htmlAudio = player.current?.audio.current
+        if (htmlAudio) {
+            htmlAudio.currentTime = timestamp;
+        }
     };
 
     return (
@@ -400,7 +400,7 @@ export const KonspektPage = (props) => {
             >
                 <KonspektPlayer
                     filename={audioName}
-                    // playerRef={player}
+                    playerRef={player}
                 ></KonspektPlayer>
             </div>
             <LoadingButton

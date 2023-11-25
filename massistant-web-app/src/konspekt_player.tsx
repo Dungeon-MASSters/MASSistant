@@ -11,7 +11,7 @@ export const KonspektPlayer = ({ filename, playerRef }: { filename: string, play
     return (
         <AudioPlayer
             autoPlay={false}
-            // ref={playerRef}
+            ref={playerRef}
             src={`${apiUrl}/konspekt/audio/${filename}`}
             onPlay={(e) => console.log("onPlay")}
             onSeeking={(e) => {
