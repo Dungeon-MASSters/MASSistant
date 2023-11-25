@@ -7,11 +7,11 @@ class Transcribe():
         self.tiny_model = whisper.load_model("tiny", device='cuda:0')
 
     def __call__(self, audio_file: str, mode: str):
-        if mode not in ('medium', 'tiny'):
+        if mode not in ('precise', 'fast'):
             print(f'Некорректный режим транскрибации: {mode}')
-            mode = 'medium'
+            mode = 'precise'
 
-        if mode == 'medium':
+        if mode == 'precise':
             text = self.model.transcribe(audio_file, word_timestamps=True, language='ru')
         else:
             text = self.tiny_model.transcribe(audio_file, word_timestamps=True, language='ru')
