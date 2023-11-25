@@ -3,8 +3,8 @@
 [![Deploy](https://github.com/Dungeon-MASSters/MASSistant/actions/workflows/deploy.yml/badge.svg)](https://github.com/Dungeon-MASSters/MASSistant/actions/workflows/deploy.yml)
 
 [Демо](https://demo.dungeon-massters.pro)\
-[Начальный прототип UI](https://www.figma.com/file/yKx3HPXASu692FvO7Bkio2/MASSistant?type=design&node-id=106%3A52&mode=design&t=3QVcwK66235eO7aL-1)
-
+[Начальный прототип UI](https://www.figma.com/file/yKx3HPXASu692FvO7Bkio2/MASSistant?type=design&node-id=106%3A52&mode=design&t=3QVcwK66235eO7aL-1)\
+[Руководство пользователя](https://github.com/Dungeon-MASSters/MASSistant/blob/main/massistant-web-app/README.md)
 ## Локальное докер окружение
 
 ```bash

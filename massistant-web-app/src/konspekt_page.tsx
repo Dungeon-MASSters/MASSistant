@@ -25,22 +25,33 @@ import {
     Link,
     Slider,
     createTheme,
-    TextareaAutosize
+    TextareaAutosize,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    FormLabel,
+    FormControlLabel,
+    Radio,
+    RadioGroup
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import axios from "axios";
-import { createRef, useRef, useState } from "react";
+import { ChangeEvent, createRef, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import { apiUrl } from "./utils/api";
 import moment from "moment";
 import { PlayCircle } from "@mui/icons-material";
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from "@mui/icons-material/Delete";
 import { KonspektPlayer } from "./konspekt_player";
 import "./konspekt-page.css";
 import EditIcon from "@mui/icons-material/Edit";
 import H5AudioPlayer from "react-h5-audio-player";
+import { MuiFileInput } from "mui-file-input";
 
-const uploadKonspekt = (audio: File) => {
+const uploadKonspekt = (audio: File, mode: string) => {
     const url = apiUrl + "/konspekt";
 
     let formData = new FormData();
@@ -115,6 +126,51 @@ export const KonspektPage = (props) => {
     const [editItemText, setEditItemText] = useState<string | undefined>(
         undefined
     );
+
+    const [openDialog, setOpenDialog] = useState(false);
+    const [file, changeFile] = useState<File | null | undefined>(null);
+    const [mode, changeMode] = useState('fast');
+
+    const handleFileChange = (newValue: File | null) => {
+        changeFile(newValue);
+    }
+
+    const handleClickOpenDialog = () => {
+        setOpenDialog(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
+
+    const handleModeChange = (e: ChangeEvent, newValue: string) => {
+        changeMode(newValue);
+    }
+
+    const handleSubmit = async () => {
+        handleCloseDialog();
+        setUploadState("uploading");
+
+        try {
+            if (file === null || file === undefined) {
+                setUploadState("error");
+                return;
+            }
+
+            let res = await uploadKonspekt(file, mode);
+            console.log(res);
+            setUploadState("done");
+            getKonspektsQuery.refetch().then(() => {
+                scrollTarget.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "end"
+                });
+            });
+        } catch (e) {
+            console.error(e);
+            setUploadState("error");
+        }
+    }
 
     const getKonspektsQuery = useQuery(
         ["get-konspekts"],
@@ -448,39 +504,42 @@ export const KonspektPage = (props) => {
                 }}
                 loading={uploadState === "uploading"}
                 startIcon={<AudioFileRounded />}
+                onClick={handleClickOpenDialog}
             >
                 <span>Загрузить запись лекции</span>
-
-                <input
-                    id="audio-file"
-                    type="file"
-                    hidden
-                    accept="audio/*"
-                    onChange={async (e) => {
-                        setUploadState("uploading");
-
-                        try {
-                            if (e.target.files === null) {
-                                setUploadState("error");
-                                return;
-                            }
-
-                            let res = await uploadKonspekt(e.target.files[0]);
-                            console.log(res);
-                            setUploadState("done");
-                            getKonspektsQuery.refetch().then(() => {
-                                scrollTarget.current?.scrollIntoView({
-                                    behavior: "smooth",
-                                    block: "end"
-                                });
-                            });
-                        } catch (e) {
-                            console.error(e);
-                            setUploadState("error");
-                        }
-                    }}
-                />
             </LoadingButton>
+            <Dialog open={openDialog} onClose={handleCloseDialog}>
+                <DialogTitle>Загрузить аудио</DialogTitle>
+                <DialogContent sx={{display: 'flex', flexDirection: 'column'}}>
+                    <FormLabel>Файл аудиозаписи</FormLabel>
+                    <MuiFileInput
+                        placeholder="Нажмите, чтобы выбрать файл"
+                        value={file} onChange={handleFileChange}
+                        clearIconButtonProps={{
+                            children: <CloseIcon fontSize="small" />
+                        }}
+                        inputProps={{
+                            accept: 'audio/*',
+                            startAdornment: <AttachFileIcon />
+                        }}>
+                    </MuiFileInput>
+                    <div style={{ margin: '1em 0' }}></div>
+                    <FormLabel>Режим транскрибирования</FormLabel>
+                    <RadioGroup
+                        row
+                        defaultValue="fast"
+                        name="radio-buttons-group"
+                        onChange={handleModeChange}
+                    >
+                        <FormControlLabel value="fast" control={<Radio />} label="Быстрый" />
+                        <FormControlLabel value="precise" control={<Radio />} label="Точный" />
+                    </RadioGroup>
+                </DialogContent>
+                <DialogActions>
+                    <Button color="error" onClick={handleCloseDialog}>Отмена</Button>
+                    <Button onClick={handleSubmit}>Загрузить</Button>
+                </DialogActions>
+            </Dialog>
         </>
     );
 };
