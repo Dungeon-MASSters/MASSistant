@@ -24,7 +24,8 @@ import {
     IconButton,
     Link,
     Slider,
-    createTheme
+    createTheme,
+    TextareaAutosize
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import axios from "axios";
@@ -36,7 +37,7 @@ import { PlayCircle } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { KonspektPlayer } from "./konspekt_player";
 import "./konspekt-page.css";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 import H5AudioPlayer from "react-h5-audio-player";
 
 const uploadKonspekt = (audio: File) => {
@@ -110,6 +111,11 @@ export const KonspektPage = (props) => {
     const [uploadState, setUploadState] = useState("");
     const scrollTarget = useRef<HTMLDivElement | null>(null);
 
+    const [editItemID, setEditItemID] = useState<number | undefined>(undefined);
+    const [editItemText, setEditItemText] = useState<string | undefined>(
+        undefined
+    );
+
     const getKonspektsQuery = useQuery(
         ["get-konspekts"],
         () => getKonspektsList(),
@@ -127,8 +133,9 @@ export const KonspektPage = (props) => {
     };
 
     const player = createRef<H5AudioPlayer>();
-    const handleEdit = (id) => {
-
+    const handleEdit = (id, text) => {
+        setEditItemID(id);
+        setEditItemText(text);
     };
 
     const handlePlayClick = (id: any, filename: string) => {
@@ -143,7 +150,7 @@ export const KonspektPage = (props) => {
         timestamp: number
     ) => {
         handlePlayClick(id, filename);
-        const htmlAudio = player.current?.audio.current
+        const htmlAudio = player.current?.audio.current;
         if (htmlAudio) {
             htmlAudio.currentTime = timestamp;
         }
@@ -248,36 +255,47 @@ export const KonspektPage = (props) => {
                                             expandIcon={<ExpandMore />}
                                         >
                                             <div
-                                                    style={{
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        maxWidth: "25em"
-                                                    }}
-                                                >
-                                            <span
                                                 style={{
-                                                    fontWeight: "bold",
-                                                    fontSize: "1em",
-                                                    opacity: 0.8,
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    maxWidth: "25em"
                                                 }}
                                             >
-                                                Транскрибация
-                                            </span>
-                                            <IconButton
-                                                onClick={() =>
-                                                    handleEdit(item.id)
-                                                }
-                                            >
-                                                <EditIcon />
-                                            </IconButton>
+                                                <span
+                                                    style={{
+                                                        fontWeight: "bold",
+                                                        fontSize: "1em",
+                                                        opacity: 0.8
+                                                    }}
+                                                >
+                                                    Транскрибация
+                                                </span>
+                                                <IconButton
+                                                    onClick={() =>
+                                                        handleEdit(
+                                                            item.id,
+                                                            item.trans_text
+                                                        )
+                                                    }
+                                                >
+                                                    <EditIcon />
+                                                </IconButton>
                                             </div>
                                         </AccordionSummary>
                                         <AccordionDetails>
                                             <Typography>
                                                 {item.trans_text ? (
-                                                    <p>
-                                                        Текст: {item.trans_text}
-                                                    </p>
+                                                    item.id === editItemID ? (
+                                                        <TextareaAutosize
+                                                            minRows={10}
+                                                            style={{
+                                                                width: "100%"
+                                                            }}
+                                                            value={editItemText}
+                                                        />
+                                                    ) : (
+                                                        <p>{item.trans_text}</p>
+                                                    )
                                                 ) : (
                                                     <LinearProgress />
                                                 )}
@@ -364,7 +382,6 @@ export const KonspektPage = (props) => {
                                                         }
                                                     </p>
 
-
                                                     <h3>Основаная часть</h3>
                                                     <p>
                                                         {
@@ -373,7 +390,6 @@ export const KonspektPage = (props) => {
                                                             ]
                                                         }
                                                     </p>
-
 
                                                     <h3>Заключение</h3>
                                                     <p>
