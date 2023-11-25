@@ -46,6 +46,9 @@ const uploadKonspekt = (audio: File) => {
     return axios.post(url, formData, {
         headers: {
             "Content-Type": "multipart/form-data"
+        },
+        params: {
+            mode: "fast"
         }
     });
 };
