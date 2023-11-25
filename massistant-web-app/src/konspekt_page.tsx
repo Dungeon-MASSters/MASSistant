@@ -36,6 +36,7 @@ import { PlayCircle } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { KonspektPlayer } from "./konspekt_player";
 import "./konspekt-page.css";
+import EditIcon from '@mui/icons-material/Edit';
 import H5AudioPlayer from "react-h5-audio-player";
 
 const uploadKonspekt = (audio: File) => {
@@ -123,6 +124,10 @@ export const KonspektPage = (props) => {
         axios
             .delete(`${apiUrl}/konspekt/${id}`)
             .then(() => getKonspektsQuery.refetch());
+    };
+
+    const handleEdit = (id) => {
+
     };
 
     // const player = createRef<H5AudioPlayer>();
@@ -243,16 +248,30 @@ export const KonspektPage = (props) => {
                                         <AccordionSummary
                                             expandIcon={<ExpandMore />}
                                         >
+                                            <div
+                                                    style={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        maxWidth: "25em"
+                                                    }}
+                                                >
                                             <span
                                                 style={{
                                                     fontWeight: "bold",
                                                     fontSize: "1em",
-                                                    opacity: 0.8
+                                                    opacity: 0.8,
                                                 }}
                                             >
-                                                Транскрибация (прям свежая с
-                                                бекенда)
+                                                Транскрибация
                                             </span>
+                                            <IconButton
+                                                onClick={() =>
+                                                    handleEdit(item.id)
+                                                }
+                                            >
+                                                <EditIcon />
+                                            </IconButton>
+                                            </div>
                                         </AccordionSummary>
                                         <AccordionDetails>
                                             <Typography>
