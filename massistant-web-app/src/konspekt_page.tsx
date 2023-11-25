@@ -46,6 +46,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from "@mui/icons-material/Delete";
 import { KonspektPlayer } from "./konspekt_player";
 import "./konspekt-page.css";
+import EditIcon from '@mui/icons-material/Edit';
 import H5AudioPlayer from "react-h5-audio-player";
 import { MuiFileInput } from "mui-file-input";
 
@@ -104,12 +105,12 @@ const GlossaryItem = ({
             <span>
                 {word} - {definition}
             </span>
-            <Link
-                variant="button"
+            <Button
+                variant="text"
                 onClick={() => handleTimeclick(audio, timestamp)}
             >
                 {getTime(timestamp)}
-            </Link>
+            </Button>
         </Stack>
     );
 };
@@ -181,7 +182,10 @@ export const KonspektPage = (props) => {
             .then(() => getKonspektsQuery.refetch());
     };
 
-    // const player = createRef<H5AudioPlayer>();
+    const player = createRef<H5AudioPlayer>();
+    const handleEdit = (id) => {
+
+    };
 
     const handlePlayClick = (id: any, filename: string) => {
         if (id != audioId) {
@@ -195,10 +199,10 @@ export const KonspektPage = (props) => {
         timestamp: number
     ) => {
         handlePlayClick(id, filename);
-        // const htmlAudio = player.current?.audio.current
-        // if (htmlAudio) {
-        //     htmlAudio.currentTime = 33;
-        // }
+        const htmlAudio = player.current?.audio.current
+        if (htmlAudio) {
+            htmlAudio.currentTime = timestamp;
+        }
     };
 
     return (
@@ -299,16 +303,30 @@ export const KonspektPage = (props) => {
                                         <AccordionSummary
                                             expandIcon={<ExpandMore />}
                                         >
+                                            <div
+                                                    style={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        maxWidth: "25em"
+                                                    }}
+                                                >
                                             <span
                                                 style={{
                                                     fontWeight: "bold",
                                                     fontSize: "1em",
-                                                    opacity: 0.8
+                                                    opacity: 0.8,
                                                 }}
                                             >
-                                                Транскрибация (прям свежая с
-                                                бекенда)
+                                                Транскрибация
                                             </span>
+                                            <IconButton
+                                                onClick={() =>
+                                                    handleEdit(item.id)
+                                                }
+                                            >
+                                                <EditIcon />
+                                            </IconButton>
+                                            </div>
                                         </AccordionSummary>
                                         <AccordionDetails>
                                             <Typography>
@@ -456,7 +474,7 @@ export const KonspektPage = (props) => {
             >
                 <KonspektPlayer
                     filename={audioName}
-                    // playerRef={player}
+                    playerRef={player}
                 ></KonspektPlayer>
             </div>
             <LoadingButton

@@ -17,7 +17,7 @@ def create_konspekt_upload(db: Session, orignal_filename: Union[str, None], file
 
 
 def get_konspekts(db: Session) -> list[KonspektUpload]:
-    return db.query(KonspektUpload).all()
+    return db.query(KonspektUpload).order_by(KonspektUpload.created_at).all()
 
 
 def get_konspekt_by_id(db: Session, id: int) -> Union[KonspektUpload, None]:
