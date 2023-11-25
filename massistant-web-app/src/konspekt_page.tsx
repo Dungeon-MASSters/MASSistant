@@ -335,7 +335,38 @@ export const KonspektPage = (props) => {
                                             </span>
                                         </AccordionSummary>
                                         <AccordionDetails>
+                                            {item.summary && (
+                                                <Typography>
+                                                    <h3>Введение</h3>
+                                                    <p>
+                                                        {
+                                                            item.summary[
+                                                                "introduction"
+                                                            ]
+                                                        }
+                                                    </p>
 
+
+                                                    <h3>Основаная часть</h3>
+                                                    <p>
+                                                        {
+                                                            item.summary[
+                                                                "main_part"
+                                                            ]
+                                                        }
+                                                    </p>
+
+
+                                                    <h3>Заключение</h3>
+                                                    <p>
+                                                        {
+                                                            item.summary[
+                                                                "conclusion"
+                                                            ]
+                                                        }
+                                                    </p>
+                                                </Typography>
+                                            )}
                                         </AccordionDetails>
                                     </Accordion>
                                     <Link
