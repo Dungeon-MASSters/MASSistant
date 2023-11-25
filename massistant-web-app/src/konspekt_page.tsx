@@ -3,7 +3,8 @@ import {
     UploadFileRounded,
     Save,
     ExpandMore,
-    PlayArrow
+    PlayArrow,
+    TextFields
 } from "@mui/icons-material";
 import {
     Accordion,
@@ -33,7 +34,8 @@ import {
     FormLabel,
     FormControlLabel,
     Radio,
-    RadioGroup
+    RadioGroup,
+    TextField
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import axios from "axios";
@@ -44,6 +46,7 @@ import moment from "moment";
 import { PlayCircle } from "@mui/icons-material";
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import CloseIcon from '@mui/icons-material/Close';
+import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from "@mui/icons-material/Delete";
 import { KonspektPlayer } from "./konspekt_player";
 import "./konspekt-page.css";
@@ -66,6 +69,11 @@ const uploadKonspekt = (audio: File, mode: string) => {
         }
     });
 };
+
+const editText = (id: number, newValue: string) => {
+    const url = `/api/konspekt/${id}/text`;
+    return axios.post(url, { text: newValue });
+}
 
 const getKonspektsList = () => {
     const url = apiUrl + "/konspekt";
@@ -122,7 +130,7 @@ export const KonspektPage = (props) => {
     const [uploadState, setUploadState] = useState("");
     const scrollTarget = useRef<HTMLDivElement | null>(null);
 
-    const [editItemID, setEditItemID] = useState<number | undefined>(undefined);
+    const [editItemID, setEditItemID] = useState<number | null | undefined>(undefined);
     const [editItemText, setEditItemText] = useState<string | undefined>(
         undefined
     );
@@ -200,6 +208,24 @@ export const KonspektPage = (props) => {
             setAudio(filename);
         }
     };
+
+    const handleTextEditSubmit = async () => {
+        try {
+            if (editItemID && editItemText) {
+                let res = await editText(editItemID, editItemText);
+                console.log(res);
+                getKonspektsQuery.refetch().then(() => {
+                    scrollTarget.current?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "end"
+                    });
+                });
+            }
+        } catch (e) {
+            console.error(e);
+            setUploadState("error");
+        }
+    }
 
     const handleTimeclick = (
         { id, filename }: { id: number; filename: string },
@@ -326,36 +352,79 @@ export const KonspektPage = (props) => {
                                                 >
                                                     Транскрибация
                                                 </span>
-                                                <IconButton
-                                                    onClick={() =>
-                                                        handleEdit(
-                                                            item.id,
-                                                            item.trans_text
-                                                        )
-                                                    }
-                                                >
-                                                    <EditIcon />
-                                                </IconButton>
                                             </div>
                                         </AccordionSummary>
                                         <AccordionDetails>
                                             <Typography>
                                                 {item.trans_text ? (
                                                     item.id === editItemID ? (
-                                                        <TextareaAutosize
-                                                            minRows={10}
+                                                        <TextField
+                                                            multiline
+                                                            maxRows={10}
                                                             style={{
                                                                 width: "100%"
                                                             }}
                                                             value={editItemText}
+                                                            onChange={(event) => {
+                                                                setEditItemText(event.target.value);
+                                                            }}
                                                         />
                                                     ) : (
-                                                        <p>{item.trans_text}</p>
+                                                        <Box sx={{ maxHeight: "18em", overflowY: 'auto'}}>
+                                                            <p>{item.trans_text}</p>
+                                                        </Box>
                                                     )
                                                 ) : (
                                                     <LinearProgress />
                                                 )}
                                             </Typography>
+                                            <div style={{
+                                                display: 'flex',
+                                                marginTop: '1em',
+                                                justifyContent: 'flex-end'
+                                            }}>
+                                                {item.id === editItemID ?
+                                                <Stack spacing={2} direction="row" >
+                                                    <Button
+                                                        variant="contained"
+                                                        color="error"
+                                                        component="label"
+                                                        onClick={() => {
+                                                            setEditItemID(null);
+                                                        }}
+                                                    >
+                                                        <span>Отмена</span>
+                                                    </Button>
+                                                    <Button
+                                                        variant="contained"
+                                                        component="label"
+                                                        startIcon={<SaveIcon />}
+                                                        onClick={() => {
+                                                            handleEdit(
+                                                                item.id,
+                                                                item.trans_text
+                                                            );
+                                                            handleTextEditSubmit();
+                                                        }}
+                                                    >
+                                                        <span>Сохранить текст</span>
+                                                    </Button>
+                                                </Stack> :
+                                                <Button
+                                                    variant="contained"
+                                                    component="label"
+                                                    disabled={item.trans_text == null}
+                                                    startIcon={<EditIcon />}
+                                                    onClick={() => {
+                                                        handleEdit(
+                                                            item.id,
+                                                            item.trans_text
+                                                        );
+                                                    }}
+                                                >
+                                                    <span>Изменить текст</span>
+                                                </Button>}
+                                            </div>
                                         </AccordionDetails>
                                     </Accordion>
                                     <Accordion
@@ -520,7 +589,7 @@ export const KonspektPage = (props) => {
                         }}
                         inputProps={{
                             accept: 'audio/*',
-                            startAdornment: <AttachFileIcon />
+                            startIcon: <AttachFileIcon />
                         }}>
                     </MuiFileInput>
                     <div style={{ margin: '1em 0' }}></div>
