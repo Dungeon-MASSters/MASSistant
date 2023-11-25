@@ -78,7 +78,7 @@ def read_item(item_id: int, q: Union[str, None] = None):
 
 @app.post("/api/konspekt")
 async def upload_konspekt(mode: Union[None, str], audio: UploadFile, db: Session = Depends(get_db)) -> Union[
-        KonspektUploadSuccessResponse, DefaultErrorResponse]:
+    KonspektUploadSuccessResponse, DefaultErrorResponse]:
     filename = audio.filename
     og_filename = audio.filename
     mime = audio.content_type
@@ -160,6 +160,7 @@ def get_konspekt_file(filename: str):
 
     headers = {'Content-Disposition': f'attachment; filename="{filename}"'}
     return StreamingResponse(iterfile(), headers=headers, media_type=ext[0])
+
 
 # @celeryFeedback.task
 # def set_transcribed_text(konspekt_id: int, text: str):
@@ -264,23 +265,30 @@ def download_konspekt(kid: int, db: Session = Depends(get_db)):
     document.add_paragraph("None" if konspekt_upload.transcribe is None else konspekt_upload.transcribe)
     document.add_paragraph("## Глоссарий\n", style='Heading 1')
 
-    terms = konspekt_upload.glossary['terms']
-    for i in range(len(terms)):
-        document.add_paragraph(f"{terms[i]['term']} - {terms[i]['meaning']}")
+    if not konspekt_upload.glossary is None:
+        terms = konspekt_upload.glossary['terms']
+        for i in range(len(terms)):
+            document.add_paragraph(f"{terms[i]['term']} - {terms[i]['meaning']}")
+    else:
+        document.add_paragraph("None")
     document.add_paragraph("## Краткое содержание\n", style='Heading 1')
     if konspekt_upload.summary is None:
         document.add_paragraph("None")
     else:
         document.add_paragraph("###Введение\n", style='Heading 2')
-        document.add_paragraph("None" if konspekt_upload.summary['introduction'] is None else konspekt_upload.summary['introduction'])
+        document.add_paragraph(
+            "None" if konspekt_upload.summary['introduction'] is None else konspekt_upload.summary['introduction'])
         document.add_paragraph("###Основная часть\n", style='Heading 2')
-        document.add_paragraph("None" if konspekt_upload.summary['main_part'] is None else konspekt_upload.summary['main_part'])
+        document.add_paragraph(
+            "None" if konspekt_upload.summary['main_part'] is None else konspekt_upload.summary['main_part'])
         document.add_paragraph("###Основная часть\n", style='Heading 2')
-        document.add_paragraph("None" if konspekt_upload.summary['conclusion'] is None else konspekt_upload.summary['conclusion'])
+        document.add_paragraph(
+            "None" if konspekt_upload.summary['conclusion'] is None else konspekt_upload.summary['conclusion'])
 
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         document.save(tmp.name)
-        return FileResponse(tmp.name, media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        return FileResponse(tmp.name,
+                            media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
 
 
 @app.delete("/api/konspekt/{kid}")
