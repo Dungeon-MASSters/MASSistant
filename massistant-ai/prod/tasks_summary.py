@@ -3,6 +3,8 @@ import os
 import requests
 import base64
 from multiprocessing import Process, Manager
+from summary import GenerateSum
+from syntax_analyzer import SyntaxAnalyzer
 
 api_server = os.getenv("API_SERVER")
 if api_server is None:
@@ -26,9 +28,9 @@ def get_file_from_server(filename: str) -> str:
     return path_to_file
 
 
-def send_to_api_server(id: int, extracted_terms: list) -> int:
+def send_to_api_server(id: int, extracted_summary: dict) -> int:
     url = api_server + "/konspekt/" + str(id) + "/summary"
-    resp = requests.post(url, json={'data': extracted_terms})
+    resp = requests.post(url, json={'data': extracted_summary})
 
     return resp.status_code
 
@@ -39,13 +41,20 @@ app = Celery(
     broker='pyamqp://app:dungeon@rabbit.dungeon-massters.pro:5672/'
 )
 
-@app.task
-def do_extract_summary_stuff(id, filename, mode: str):
+summary = GenerateSum()
+analyzer = SyntaxAnalyzer()
 
-    data = get_file_from_server(filename)  # если что файл кешируется в /tmp с прошлого этапа, но если он почему-то удален, то он скачается заново
-    print(filename, data)
+@app.task
+def do_extract_summary_stuff(id, text: str, mode: str):
+
+    #data = get_data(filename)  # если что файл кешируется в /tmp с прошлого этапа, но если он почему-то удален, то он скачается заново
+    #print(filename, data)
+
+    doc = analyzer(text)
+
+    sentences = analyzer.get_sentences(doc, normalize=False, upos=[])
     
-    extracted_summary: list = extract_summary_func_or_smth(data)
+    extracted_summary: dict = summary(sentences)
     print(extracted_summary)
 
     print(f'finished job: {filename}')
